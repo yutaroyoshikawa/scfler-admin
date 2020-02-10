@@ -1,6 +1,8 @@
 import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Home from "./pages/Home";
+import { createGlobalStyle } from "styled-components";
+import reset from "styled-reset";
 
 interface PageItem {
   url: string;
@@ -17,6 +19,7 @@ const pages: PageItem[] = [
 const App = () => {
   return (
     <Router>
+      <GlobalStyle />
       <Switch>
         {pages.map(page => (
           <Route>
@@ -29,3 +32,7 @@ const App = () => {
 };
 
 export default App;
+
+const GlobalStyle = createGlobalStyle`
+  ${reset}
+`;
