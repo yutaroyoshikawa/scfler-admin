@@ -21,8 +21,8 @@ const App = () => {
     <Router>
       <GlobalStyle />
       <Switch>
-        {pages.map(page => (
-          <Route>
+        {pages.map((page, index) => (
+          <Route key={index}>
             <page.component />
           </Route>
         ))}
