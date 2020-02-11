@@ -16,4 +16,4 @@ mv ./client/gen $current_path/src
 
 rm -rf ./client
 
-fi
+exit 0
