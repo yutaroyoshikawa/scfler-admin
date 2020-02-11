@@ -6,18 +6,29 @@ on:
 
 jobs:
   deploy:
-    name: Build & Deploy
+    name: Deploy
+
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@master
-      - uses: actions/setup-node@master
-        with:
-          node-version: 10.x
-      - run: yarn install
-      - run: yarn build
-      - uses: actions/aws/cli@master
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
-        with:
-          args: s3 sync dist/ s3://sicfler-admin --delete
+    - uses: actions/checkout@v1
+
+    - name: Setup Python 3.7 for awscli
+      uses: actions/setup-python@v1
+      with:
+        version: '3.7'
+        architecture: 'x64'
+
+    - name: Install awscli
+      run: pip install --upgrade pip awscli
+
+    - name: Build
+      run: |
+        yarn install
+        yarn generate
+
+    - name: Copy to s3
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      run: aws s3 cp ./dist ${{ secrets.S3_UPLOAD_PATH }} --recursive --acl public-read
