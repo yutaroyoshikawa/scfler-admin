@@ -105,7 +105,7 @@ const Header: React.FC = props => {
         <Divider />
         <List>
           {menu.map((item, key) => (
-            <ListItem key={key}>
+            <ListItem key={key} button={true}>
               <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText>{item.name}</ListItemText>
             </ListItem>
