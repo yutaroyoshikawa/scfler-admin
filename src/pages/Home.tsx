@@ -1,7 +1,8 @@
 import React from "react";
+import Title from "../components/Title";
 
 const Home: React.FC = props => {
-  return <h1>Home</h1>
+  return <Title>hoge</Title>
 };
 
 export default Home;
