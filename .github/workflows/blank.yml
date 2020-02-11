@@ -25,7 +25,7 @@ jobs:
     - name: Build
       run: |
         yarn install
-        yarn generate
+        yarn build
 
     - name: Copy to s3
       env:
