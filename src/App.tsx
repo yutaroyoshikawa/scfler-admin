@@ -6,7 +6,8 @@ import { StylesProvider } from "@material-ui/styles";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import reset from "styled-reset";
 import Template from "./components/Template";
-import { ApolloProvider } from "react-apollo-hooks";
+import { ApolloProvider } from "react-apollo";
+import { ApolloProvider as ApolloHooksProvider } from "react-apollo-hooks";
 import { ApolloClient } from "apollo-client";
 import { createHttpLink } from "apollo-link-http";
 import { InMemoryCache } from "apollo-cache-inmemory";
@@ -25,7 +26,8 @@ const pages: PageItem[] = [
 
 const client = new ApolloClient({
   link: createHttpLink({
-    uri: "https://gmdnhc2yf3.execute-api.ap-northeast-1.amazonaws.com/dev/graphql"
+    uri:
+      "https://gmdnhc2yf3.execute-api.ap-northeast-1.amazonaws.com/dev/graphql"
   }),
   cache: new InMemoryCache()
 });
@@ -38,16 +40,18 @@ const App = () => {
       <StylesProvider injectFirst={true}>
         <MuiThemeProvider theme={theme}>
           <ApolloProvider client={client}>
-            <GlobalStyle />
-            <Template>
-              <Switch>
-                {pages.map((page, index) => (
-                  <Route key={index}>
-                    <page.component />
-                  </Route>
-                ))}
-              </Switch>
-            </Template>
+            <ApolloHooksProvider client={client}>
+              <GlobalStyle />
+              <Template>
+                <Switch>
+                  {pages.map((page, index) => (
+                    <Route key={index}>
+                      <page.component />
+                    </Route>
+                  ))}
+                </Switch>
+              </Template>
+            </ApolloHooksProvider>
           </ApolloProvider>
         </MuiThemeProvider>
       </StylesProvider>
