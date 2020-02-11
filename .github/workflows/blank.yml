@@ -24,7 +24,7 @@ jobs:
 
     - name: Build
       run: |
-        npm install --save
+        npm install --production
         npm run build
 
     - name: Copy to s3
