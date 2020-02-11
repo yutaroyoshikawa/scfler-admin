@@ -12,7 +12,7 @@ cd $background_path
 
 npm run gen-types:client
 
-mv ./client/gen $current_path/src
+mv -f ./client/gen $current_path/src
 
 rm -rf ./client
 
