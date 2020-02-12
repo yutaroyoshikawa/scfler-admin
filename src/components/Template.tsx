@@ -27,4 +27,5 @@ const Wrapper = styled.div`
 
 const MainContent = styled.main`
   padding-top: 64px;
+  width: 100%;
 `;
