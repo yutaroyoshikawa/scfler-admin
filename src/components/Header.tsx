@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import styled, { css } from "styled-components";
 import AppBar from "@material-ui/core/AppBar";
 import ToolBar from "@material-ui/core/Toolbar";
+import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
@@ -14,32 +16,17 @@ import Divider from "@material-ui/core/Divider";
 import { useTheme, makeStyles } from "@material-ui/styles";
 import { Theme } from "@material-ui/core/styles";
 import clsx from "clsx";
-
-interface MenuItem {
-  name: string;
-  path: string;
-  icon: JSX.Element;
-  adminOnly: boolean;
-}
-
-const menu: MenuItem[] = [
-  {
-    name: "hoge",
-    path: "/",
-    icon: <MenuIcon />,
-    adminOnly: false
-  }
-];
+import { pages } from "../App";
 
 const DRAWER_WIDTH = 240;
 
 const useStyle = makeStyles((theme: Theme) => ({
   toolbarIcon: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    padding: '0 8px',
-    ...theme.mixins.toolbar,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    padding: "0 8px",
+    ...theme.mixins.toolbar
   },
   drawerPaper: {
     position: "relative",
@@ -62,10 +49,17 @@ const useStyle = makeStyles((theme: Theme) => ({
     [theme.breakpoints.up("sm")]: {
       width: theme.spacing(9)
     }
+  },
+  listItemName: {
+    color: theme.palette.grey[700]
   }
 }));
 
-const Header: React.FC = props => {
+interface Props {
+  title: string;
+}
+
+const Header: React.FC<Props> = props => {
   const [isOpenDrawer, setIsDrawer] = useState<boolean>(true);
   const theme = useTheme();
   const classes = useStyle();
@@ -84,6 +78,9 @@ const Header: React.FC = props => {
               <MenuButton />
             </IconButton>
           )}
+          <Typography component="h1" variant="h6" color="inherit">
+            {props.title}
+          </Typography>
         </Tools>
       </HeaderBar>
       <Drawer
@@ -104,11 +101,15 @@ const Header: React.FC = props => {
         </CloseMenuWrapper>
         <Divider />
         <List>
-          {menu.map((item, key) => (
-            <ListItem key={key} button={true}>
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText>{item.name}</ListItemText>
-            </ListItem>
+          {pages.map((item, key) => (
+            <Link to={item.url}>
+              <ListItem key={key} button={true}>
+                <ListItemIcon>{item.icon}</ListItemIcon>
+                <ListItemText className={classes.listItemName}>
+                  {item.name}
+                </ListItemText>
+              </ListItem>
+            </Link>
           ))}
         </List>
         <Divider />

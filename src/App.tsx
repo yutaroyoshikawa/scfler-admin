@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Home from "./pages/Home";
+import Posts from "./pages/Posts";
 import { createGlobalStyle } from "styled-components";
 import { StylesProvider } from "@material-ui/styles";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
@@ -11,16 +12,28 @@ import { ApolloProvider as ApolloHooksProvider } from "react-apollo-hooks";
 import { ApolloClient } from "apollo-client";
 import { createHttpLink } from "apollo-link-http";
 import { InMemoryCache } from "apollo-cache-inmemory";
+import ViewDayIcon from "@material-ui/icons/ViewDay";
+import HomeIcon from "@material-ui/icons/Home";
 
 interface PageItem {
   url: string;
+  name: string;
+  icon: JSX.Element;
   component: React.FC<any>;
 }
 
-const pages: PageItem[] = [
+export const pages: PageItem[] = [
   {
-    url: "",
+    url: "/",
+    name: "ホーム",
+    icon: <HomeIcon />,
     component: Home
+  },
+  {
+    url: "/posts",
+    name: "投稿一覧",
+    icon: <ViewDayIcon />,
+    component: Posts
   }
 ];
 

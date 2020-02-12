@@ -1,11 +1,19 @@
 import React from "react";
 import styled from "styled-components";
 import Header from "./Header";
+import { useLocation } from "react-router";
+import { pages } from "../App";
 
 const Template: React.FC = props => {
+  const location = useLocation();
+
   return (
     <Wrapper>
-      <Header />
+      <Header
+        title={
+          pages[pages.findIndex(page => page.url === location.pathname)].name
+        }
+      />
       <MainContent>{props.children}</MainContent>
     </Wrapper>
   );
