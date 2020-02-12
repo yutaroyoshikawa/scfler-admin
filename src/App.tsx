@@ -2,6 +2,8 @@ import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Posts from "./pages/Posts";
+import Orners from "./pages/Orners";
+import Admins from "./pages/Admins";
 import { createGlobalStyle } from "styled-components";
 import { StylesProvider } from "@material-ui/styles";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
@@ -14,13 +16,16 @@ import { createHttpLink } from "apollo-link-http";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import ViewDayIcon from "@material-ui/icons/ViewDay";
 import HomeIcon from "@material-ui/icons/Home";
+import People from "@material-ui/icons/People";
+import ContactMail from "@material-ui/icons/ContactMail";
 import LoginProvider from "./components/LoginProvider";
 
 interface PageItem {
   url: string;
   name: string;
   icon: JSX.Element;
-  component: React.FC<any>;
+  component: React.FC;
+  isAdmin: boolean;
 }
 
 export const pages: PageItem[] = [
@@ -28,13 +33,29 @@ export const pages: PageItem[] = [
     url: "/",
     name: "ホーム",
     icon: <HomeIcon />,
-    component: Home
+    component: Home,
+    isAdmin: false
   },
   {
     url: "/posts",
     name: "投稿一覧",
     icon: <ViewDayIcon />,
-    component: Posts
+    component: Posts,
+    isAdmin: false
+  },
+  {
+    url: "/orners",
+    name: "オーナー一覧",
+    icon: <People />,
+    component: Orners,
+    isAdmin: true
+  },
+  {
+    url: "/admins",
+    name: "管理者一覧",
+    icon: <ContactMail />,
+    component: Admins,
+    isAdmin: true
   }
 ];
 
