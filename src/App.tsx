@@ -58,7 +58,7 @@ const App = () => {
               <Template>
                 <Switch>
                   {pages.map((page, index) => (
-                    <Route key={index}>
+                    <Route key={index} exact={true} path={page.url}>
                       <page.component />
                     </Route>
                   ))}
