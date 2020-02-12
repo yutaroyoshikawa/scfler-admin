@@ -18,6 +18,14 @@ import { useTheme, makeStyles } from "@material-ui/styles";
 import { Theme } from "@material-ui/core/styles";
 import clsx from "clsx";
 import { pages } from "../App";
+import { useQuery } from "@apollo/react-hooks";
+import gql from "graphql-tag";
+
+const GET_LOGIN_STATE = gql`
+  {
+    isLoggedIn @client
+  }
+`;
 
 const DRAWER_WIDTH = 240;
 
@@ -64,6 +72,15 @@ const Header: React.FC<Props> = props => {
   const [isOpenDrawer, setIsDrawer] = useState<boolean>(true);
   const theme = useTheme();
   const classes = useStyle();
+  const { client } = useQuery(GET_LOGIN_STATE);
+
+  const onLogout = () => {
+    client.writeData({
+      data: {
+        isLoggedIn: false
+      }
+    });
+  };
 
   return (
     <>
@@ -83,7 +100,13 @@ const Header: React.FC<Props> = props => {
             <Typography component="h1" variant="h6" color="inherit">
               {props.title}
             </Typography>
-            <Button variant="contained" color="secondary">ログアウト</Button>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => onLogout()}
+            >
+              ログアウト
+            </Button>
           </HeaderWrapper>
         </Tools>
       </HeaderBar>

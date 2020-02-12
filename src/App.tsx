@@ -14,6 +14,7 @@ import { createHttpLink } from "apollo-link-http";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import ViewDayIcon from "@material-ui/icons/ViewDay";
 import HomeIcon from "@material-ui/icons/Home";
+import LoginProvider from "./components/LoginProvider";
 
 interface PageItem {
   url: string;
@@ -37,12 +38,20 @@ export const pages: PageItem[] = [
   }
 ];
 
+const cache = new InMemoryCache();
+
 const client = new ApolloClient({
   link: createHttpLink({
     uri:
       "https://gmdnhc2yf3.execute-api.ap-northeast-1.amazonaws.com/dev/graphql"
   }),
-  cache: new InMemoryCache()
+  cache
+});
+
+cache.writeData({
+  data: {
+    isLoggedIn: false
+  }
 });
 
 const theme = createMuiTheme();
@@ -55,15 +64,17 @@ const App = () => {
           <ApolloProvider client={client}>
             <ApolloHooksProvider client={client}>
               <GlobalStyle />
-              <Template>
-                <Switch>
-                  {pages.map((page, index) => (
-                    <Route key={index} exact={true} path={page.url}>
-                      <page.component />
-                    </Route>
-                  ))}
-                </Switch>
-              </Template>
+              <LoginProvider>
+                <Template>
+                  <Switch>
+                    {pages.map((page, index) => (
+                      <Route key={index} exact={true} path={page.url}>
+                        <page.component />
+                      </Route>
+                    ))}
+                  </Switch>
+                </Template>
+              </LoginProvider>
             </ApolloHooksProvider>
           </ApolloProvider>
         </MuiThemeProvider>
