@@ -63,8 +63,7 @@ const cache = new InMemoryCache();
 
 const client = new ApolloClient({
   link: createHttpLink({
-    uri:
-      "https://gmdnhc2yf3.execute-api.ap-northeast-1.amazonaws.com/dev/graphql"
+    uri: "https://graphql.sicfler.com/v1/graphql"
   }),
   cache
 });
