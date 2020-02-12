@@ -6,6 +6,7 @@ import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import Skeleten from "@material-ui/lab/Skeleton";
+import Divider from "@material-ui/core/Divider"
 import { Theme } from "@material-ui/core";
 
 const useStyle = makeStyles((theme: Theme) => ({
@@ -18,6 +19,9 @@ const useStyle = makeStyles((theme: Theme) => ({
   },
   title: {
     fontSize: 14
+  },
+  dividerSpacing: {
+    margin: `${theme.spacing(2)}px 0`
   }
 }));
 
@@ -32,7 +36,7 @@ const Home: React.FC = props => {
         <Card className={classes.userCard}>
           <CardContent>
             <Typography className={classes.title} color="textSecondary">
-              ユーザー名
+              email
             </Typography>
             {usersQuery.loading && (
               <Skeleten animation="wave" width={300} height={40} />
@@ -44,7 +48,24 @@ const Home: React.FC = props => {
                 component="h2"
                 color="textPrimary"
               >
-                hoge
+                {usersQuery.data?.users[0]?.email}
+              </Typography>
+            )}
+            <Divider className={classes.dividerSpacing} />
+            <Typography className={classes.title} color="textSecondary">
+              アカウント種
+            </Typography>
+            {usersQuery.loading && (
+              <Skeleten animation="wave" width={300} height={40} />
+            )}
+            {!usersQuery.loading && !usersQuery.error && (
+              <Typography
+                gutterBottom
+                variant="h5"
+                component="h2"
+                color="textPrimary"
+              >
+                {usersQuery.data?.users[0]?.permission}
               </Typography>
             )}
           </CardContent>
