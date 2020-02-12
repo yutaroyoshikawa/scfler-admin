@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import styled, { css } from "styled-components";
 import AppBar from "@material-ui/core/AppBar";
+import Button from "@material-ui/core/Button";
 import ToolBar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
@@ -78,9 +79,12 @@ const Header: React.FC<Props> = props => {
               <MenuButton />
             </IconButton>
           )}
-          <Typography component="h1" variant="h6" color="inherit">
-            {props.title}
-          </Typography>
+          <HeaderWrapper>
+            <Typography component="h1" variant="h6" color="inherit">
+              {props.title}
+            </Typography>
+            <Button variant="contained" color="secondary">ログアウト</Button>
+          </HeaderWrapper>
         </Tools>
       </HeaderBar>
       <Drawer
@@ -152,4 +156,10 @@ const Tools = styled(ToolBar)`
 
 const MenuButton = styled(MenuIcon)`
   margin-right: 36;
+`;
+
+const HeaderWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
 `;
