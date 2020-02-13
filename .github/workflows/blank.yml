@@ -22,6 +22,9 @@ jobs:
     - name: Install awscli
       run: pip install --upgrade pip awscli
 
+    - name: Decode env file
+      run: echo ${{ secrets.ENV_FILE }} | base64 --decode > .env
+
     - name: Build
       run: |
         npm install
