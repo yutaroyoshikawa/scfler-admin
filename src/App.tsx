@@ -63,7 +63,7 @@ const cache = new InMemoryCache();
 
 const client = new ApolloClient({
   link: createHttpLink({
-    uri: "https://graphql.sicfler.com/v1/graphql"
+    uri: "https://api.sicfler.com/v1/graphql"
   }),
   cache
 });
