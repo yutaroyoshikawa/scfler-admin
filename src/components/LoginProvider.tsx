@@ -64,6 +64,7 @@ const LoginProvider: React.FC = props => {
                   <InputLabel>Email</InputLabel>
                   <TextField
                     value={email}
+                    required={true}
                     onChange={e => setEmail(e.target.value)}
                     className={classes.textField}
                   />
@@ -71,6 +72,8 @@ const LoginProvider: React.FC = props => {
                 <div className={classes.textFieldWrap}>
                   <InputLabel>パスワード</InputLabel>
                   <TextField
+                    type="password"
+                    required={true}
                     value={password}
                     onChange={e => setPassword(e.target.value)}
                     className={classes.textField}
