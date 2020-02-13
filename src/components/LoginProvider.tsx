@@ -49,24 +49,19 @@ const LoginProvider: React.FC = props => {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const { cognitoUser, newPasswordRequired } = await signIn(
-        userName,
-        password
-      );
+      const { newPasswordRequired } = await signIn(userName, password);
       if (newPasswordRequired) {
-        const newResult = await newPasswordChallenge(password, cognitoUser);
+        await newPasswordChallenge(password);
         client.writeData({
           data: {
-            isLoggedIn: true,
-            cognitoUser: newResult.cognitoUser
+            isLoggedIn: true
           }
         });
       }
       if (!newPasswordRequired) {
         client.writeData({
           data: {
-            isLoggedIn: true,
-            cognitoUser
+            isLoggedIn: true
           }
         });
       }

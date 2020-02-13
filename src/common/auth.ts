@@ -5,9 +5,10 @@ import {
   CognitoUser
 } from "amazon-cognito-identity-js";
 
+let cognitoUser: CognitoUser | null = null;
+
 export const signIn = (userName: string, password: string) => {
   return new Promise<{
-    cognitoUser: CognitoUser;
     newPasswordRequired: boolean;
   }>((resolve, reject) => {
     const userPool = new CognitoUserPool({
@@ -15,7 +16,7 @@ export const signIn = (userName: string, password: string) => {
       ClientId: process.env.REACT_APP_COGNITO_CLIENT_ID!
     });
 
-    const cognitoUser = new CognitoUser({
+    cognitoUser = new CognitoUser({
       Username: userName,
       Pool: userPool
     });
@@ -28,9 +29,9 @@ export const signIn = (userName: string, password: string) => {
     });
 
     cognitoUser.authenticateUser(authenticationDetails, {
-      onSuccess: () => {
+      onSuccess: result => {
+        localStorage.setItem("sicflerToken", result.getIdToken().getJwtToken());
         resolve({
-          cognitoUser,
           newPasswordRequired: false
         });
       },
@@ -39,7 +40,6 @@ export const signIn = (userName: string, password: string) => {
       },
       newPasswordRequired: () => {
         resolve({
-          cognitoUser,
           newPasswordRequired: true
         });
       }
@@ -47,30 +47,30 @@ export const signIn = (userName: string, password: string) => {
   });
 };
 
-export const newPasswordChallenge = (
-  password: string,
-  cognitoUser: CognitoUser
-) => {
-  return new Promise<{
-    cognitoUser: CognitoUser;
-  }>((resolve, reject) => {
-    cognitoUser.completeNewPasswordChallenge(
-      password,
-      {},
-      {
-        onSuccess: () => {
-          resolve({
-            cognitoUser
-          });
-        },
-        onFailure: err => {
-          reject(err);
-        }
-      }
-    );
-  });
+export const newPasswordChallenge = (password: string) => {
+  return new Promise((resolve, reject) =>
+    cognitoUser
+      ? cognitoUser.completeNewPasswordChallenge(
+          password,
+          {},
+          {
+            onSuccess: () => {
+              resolve({
+                cognitoUser
+              });
+            },
+            onFailure: err => {
+              reject(err);
+            }
+          }
+        )
+      : reject()
+  );
 };
 
-export const signOut = (cognitoUser: CognitoUser) => {
-  cognitoUser.signOut();
+export const signOut = () => {
+  if (cognitoUser !== null) {
+    localStorage.removeItem("sicflerToken");
+    cognitoUser.signOut();
+  }
 };
