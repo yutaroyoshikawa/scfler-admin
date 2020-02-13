@@ -62,7 +62,7 @@ const LoginProvider: React.FC = props => {
           }
         });
       }
-      if (!newPasswordChallenge) {
+      if (!newPasswordRequired) {
         client.writeData({
           data: {
             isLoggedIn: true,
