@@ -17,9 +17,9 @@ import Divider from "@material-ui/core/Divider";
 import { useTheme, makeStyles } from "@material-ui/styles";
 import { Theme } from "@material-ui/core/styles";
 import clsx from "clsx";
-import { pages } from "../App";
 import { useQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
+import { pages } from "../App";
 
 const GET_LOGIN_STATE = gql`
   {

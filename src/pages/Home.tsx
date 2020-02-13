@@ -1,18 +1,18 @@
 import React from "react";
-import Title from "../components/Title";
-import { useUsersQuery } from "../gen/graphql-client-api";
 import { makeStyles } from "@material-ui/styles";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import Skeleten from "@material-ui/lab/Skeleton";
-import Divider from "@material-ui/core/Divider"
+import Divider from "@material-ui/core/Divider";
 import { Theme } from "@material-ui/core";
+import Title from "../components/Title";
+import { useUsersQuery } from "../gen/graphql-client-api";
 
 const useStyle = makeStyles((theme: Theme) => ({
   loginnedUserInfoWrap: {
     maxWidth: "900px",
-    margin: `${theme.spacing(6)}px auto`,
+    margin: `${theme.spacing(6)}px auto`
   },
   userCard: {
     minWidth: "400px"

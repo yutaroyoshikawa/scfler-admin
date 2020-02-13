@@ -1,14 +1,9 @@
 import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import Posts from "./pages/Posts";
-import Orners from "./pages/Orners";
-import Admins from "./pages/Admins";
 import { createGlobalStyle } from "styled-components";
 import { StylesProvider } from "@material-ui/styles";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import reset from "styled-reset";
-import Template from "./components/Template";
 import { ApolloProvider } from "react-apollo";
 import { ApolloProvider as ApolloHooksProvider } from "react-apollo-hooks";
 import { ApolloClient } from "apollo-client";
@@ -18,8 +13,13 @@ import ViewDayIcon from "@material-ui/icons/ViewDay";
 import HomeIcon from "@material-ui/icons/Home";
 import People from "@material-ui/icons/People";
 import ContactMail from "@material-ui/icons/ContactMail";
-import LoginProvider from "./components/LoginProvider";
 import { SnackbarProvider } from "notistack";
+import LoginProvider from "./components/LoginProvider";
+import Template from "./components/Template";
+import Admins from "./pages/Admins";
+import Orners from "./pages/Orners";
+import Posts from "./pages/Posts";
+import Home from "./pages/Home";
 
 interface PageItem {
   url: string;

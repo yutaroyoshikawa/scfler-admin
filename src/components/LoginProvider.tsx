@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { signIn } from "../common/auth";
 import Button from "@material-ui/core/Button";
 import { useQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
@@ -10,8 +9,9 @@ import CardContent from "@material-ui/core/CardContent";
 import CardActions from "@material-ui/core/CardActions";
 import InputLabel from "@material-ui/core/InputLabel";
 import TextField from "@material-ui/core/TextField";
-import Title from "./Title";
 import { useSnackbar } from "notistack";
+import Title from "./Title";
+import { signIn } from "../common/auth";
 
 const useStyle = makeStyles((theme: Theme) => ({
   wrap: {
@@ -49,7 +49,7 @@ const LoginProvider: React.FC = props => {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const {token, cognitoUser} = await signIn(userName, password)
+      const { token, cognitoUser } = await signIn(userName, password);
       localStorage.setItem("token", token);
       client.writeData({
         data: {
@@ -58,10 +58,10 @@ const LoginProvider: React.FC = props => {
         }
       });
     } catch (error) {
-      console.log(error)
+      console.log(error);
       enqueueSnackbar(error, {
         variant: "error"
-      })
+      });
     }
   };
 

@@ -35,6 +35,13 @@
     "import/prefer-default-export": 0,
     "import/extensions": 0,
     "@typescript-eslint/explicit-function-return-type": 0,
-    "@typescript-eslint/no-explicit-any": 0
+    "@typescript-eslint/no-explicit-any": 0,
+    "react/prefer-stateless-function": 0,
+    "react/jsx-filename-extension": [1, { "extensions": [".ts", ".tsx"]  }],
+    "react/destructuring-assignment": 0,
+    "react/prop-types": 0,
+    "import/no-extraneous-dependencies": 0,
+    "react/jsx-boolean-value": 0,
+    "react/no-array-index-key": 1
   }
 }
