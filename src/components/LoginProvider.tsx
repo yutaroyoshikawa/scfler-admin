@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { signIn } from "../common/auth";
 import Button from "@material-ui/core/Button";
 import { useQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
@@ -10,6 +11,7 @@ import CardActions from "@material-ui/core/CardActions";
 import InputLabel from "@material-ui/core/InputLabel";
 import TextField from "@material-ui/core/TextField";
 import Title from "./Title";
+import { useSnackbar } from "notistack";
 
 const useStyle = makeStyles((theme: Theme) => ({
   wrap: {
@@ -39,17 +41,28 @@ const GET_LOGIN_STATE = gql`
 
 const LoginProvider: React.FC = props => {
   const { data, client } = useQuery(GET_LOGIN_STATE);
-  const [email, setEmail] = useState<string>("");
+  const [userName, setUserName] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const classes = useStyle();
+  const { enqueueSnackbar } = useSnackbar();
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    client.writeData({
-      data: {
-        isLoggedIn: true
-      }
-    });
+    try {
+      const {token, cognitoUser} = await signIn(userName, password)
+      localStorage.setItem("token", token);
+      client.writeData({
+        data: {
+          isLoggedIn: true,
+          cognitoUser
+        }
+      });
+    } catch (error) {
+      console.log(error)
+      enqueueSnackbar(error, {
+        variant: "error"
+      })
+    }
   };
 
   return (
@@ -63,9 +76,9 @@ const LoginProvider: React.FC = props => {
                 <div className={classes.textFieldWrap}>
                   <InputLabel>Email</InputLabel>
                   <TextField
-                    value={email}
+                    value={userName}
                     required={true}
-                    onChange={e => setEmail(e.target.value)}
+                    onChange={e => setUserName(e.target.value)}
                     className={classes.textField}
                   />
                 </div>

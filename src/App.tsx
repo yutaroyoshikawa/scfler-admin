@@ -19,6 +19,7 @@ import HomeIcon from "@material-ui/icons/Home";
 import People from "@material-ui/icons/People";
 import ContactMail from "@material-ui/icons/ContactMail";
 import LoginProvider from "./components/LoginProvider";
+import { SnackbarProvider } from "notistack";
 
 interface PageItem {
   url: string;
@@ -70,7 +71,8 @@ const client = new ApolloClient({
 
 cache.writeData({
   data: {
-    isLoggedIn: false
+    isLoggedIn: !!localStorage.getItem("token"),
+    cognitoUser: null
   }
 });
 
@@ -84,17 +86,19 @@ const App = () => {
           <ApolloProvider client={client}>
             <ApolloHooksProvider client={client}>
               <GlobalStyle />
-              <LoginProvider>
-                <Template>
-                  <Switch>
-                    {pages.map((page, index) => (
-                      <Route key={index} exact={true} path={page.url}>
-                        <page.component />
-                      </Route>
-                    ))}
-                  </Switch>
-                </Template>
-              </LoginProvider>
+              <SnackbarProvider>
+                <LoginProvider>
+                  <Template>
+                    <Switch>
+                      {pages.map((page, index) => (
+                        <Route key={index} exact={true} path={page.url}>
+                          <page.component />
+                        </Route>
+                      ))}
+                    </Switch>
+                  </Template>
+                </LoginProvider>
+              </SnackbarProvider>
             </ApolloHooksProvider>
           </ApolloProvider>
         </MuiThemeProvider>
