@@ -1,446 +1,500 @@
-import gql from 'graphql-tag';
-import * as ApolloReactCommon from '@apollo/react-common';
-import * as ApolloReactHooks from '@apollo/react-hooks';
+import gql from "graphql-tag";
+import * as ApolloReactCommon from "@apollo/react-common";
+import * as ApolloReactHooks from "@apollo/react-hooks";
+
 export type Maybe<T> = T | null;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: string,
-  String: string,
-  Boolean: boolean,
-  Int: number,
-  Float: number,
-  DateTime: any,
+  ID: string;
+  String: string;
+  Boolean: boolean;
+  Int: number;
+  Float: number;
+  DateTime: any;
 };
 
-
 export type Geolocation = {
-   __typename?: 'Geolocation',
-  xIndex?: Maybe<Scalars['Float']>,
-  yIndex?: Maybe<Scalars['Float']>,
+  __typename?: "Geolocation";
+  xIndex?: Maybe<Scalars["Float"]>;
+  yIndex?: Maybe<Scalars["Float"]>;
 };
 
 export type GeolocationInput = {
-  xIndex?: Maybe<Scalars['Float']>,
-  yIndex?: Maybe<Scalars['Float']>,
+  xIndex?: Maybe<Scalars["Float"]>;
+  yIndex?: Maybe<Scalars["Float"]>;
 };
 
 export type Mutation = {
-   __typename?: 'Mutation',
-  addUser: User,
-  deleteUser: User,
-  addOrner: Orner,
-  updateOrner: Orner,
-  addPost: Post,
-  deletePost: Post,
+  __typename?: "Mutation";
+  addUser: User;
+  deleteUser: User;
+  addOrner: Orner;
+  updateOrner: Orner;
+  addPost: Post;
+  deletePost: Post;
 };
-
 
 export type MutationAddUserArgs = {
-  email: Scalars['ID'],
-  password: Scalars['String']
+  email: Scalars["ID"];
+  password: Scalars["String"];
 };
-
 
 export type MutationDeleteUserArgs = {
-  email: Scalars['ID']
+  email: Scalars["ID"];
 };
-
 
 export type MutationAddOrnerArgs = {
-  email: Scalars['ID'],
-  name: Scalars['String'],
-  discription?: Maybe<Scalars['String']>,
-  icon?: Maybe<Scalars['String']>,
-  images: Array<Maybe<Scalars['String']>>,
-  address?: Maybe<Scalars['String']>,
-  location?: Maybe<GeolocationInput>
+  email: Scalars["ID"];
+  name: Scalars["String"];
+  discription?: Maybe<Scalars["String"]>;
+  icon?: Maybe<Scalars["String"]>;
+  images: Array<Maybe<Scalars["String"]>>;
+  address?: Maybe<Scalars["String"]>;
+  location?: Maybe<GeolocationInput>;
 };
-
 
 export type MutationUpdateOrnerArgs = {
-  id: Scalars['ID'],
-  email?: Maybe<Scalars['ID']>,
-  name?: Maybe<Scalars['String']>,
-  discription?: Maybe<Scalars['String']>,
-  icon?: Maybe<Scalars['String']>,
-  images?: Maybe<Array<Maybe<Scalars['String']>>>,
-  address?: Maybe<Scalars['String']>,
-  location?: Maybe<GeolocationInput>
+  id: Scalars["ID"];
+  email?: Maybe<Scalars["ID"]>;
+  name?: Maybe<Scalars["String"]>;
+  discription?: Maybe<Scalars["String"]>;
+  icon?: Maybe<Scalars["String"]>;
+  images?: Maybe<Array<Maybe<Scalars["String"]>>>;
+  address?: Maybe<Scalars["String"]>;
+  location?: Maybe<GeolocationInput>;
 };
-
 
 export type MutationAddPostArgs = {
-  name: Scalars['String'],
-  start: Scalars['DateTime'],
-  finish: Scalars['DateTime'],
-  discription?: Maybe<Scalars['String']>,
-  sumbnail?: Maybe<Scalars['String']>,
-  images: Array<Maybe<Scalars['String']>>,
-  ornerId: Scalars['String'],
-  address?: Maybe<Scalars['String']>,
-  location?: Maybe<GeolocationInput>,
-  target: TargetInput
+  name: Scalars["String"];
+  start: Scalars["DateTime"];
+  finish: Scalars["DateTime"];
+  discription?: Maybe<Scalars["String"]>;
+  sumbnail?: Maybe<Scalars["String"]>;
+  images: Array<Maybe<Scalars["String"]>>;
+  ornerId: Scalars["String"];
+  address?: Maybe<Scalars["String"]>;
+  location?: Maybe<GeolocationInput>;
+  target: TargetInput;
 };
 
-
 export type MutationDeletePostArgs = {
-  id: Scalars['ID']
+  id: Scalars["ID"];
 };
 
 export type Orner = {
-   __typename?: 'Orner',
-  id: Scalars['ID'],
-  email: Scalars['String'],
-  name: Scalars['String'],
-  discription?: Maybe<Scalars['String']>,
-  icon?: Maybe<Scalars['String']>,
-  images: Array<Maybe<Scalars['String']>>,
-  address?: Maybe<Scalars['String']>,
-  location?: Maybe<Geolocation>,
+  __typename?: "Orner";
+  id: Scalars["ID"];
+  email: Scalars["String"];
+  name: Scalars["String"];
+  discription?: Maybe<Scalars["String"]>;
+  icon?: Maybe<Scalars["String"]>;
+  images: Array<Maybe<Scalars["String"]>>;
+  address?: Maybe<Scalars["String"]>;
+  location?: Maybe<Geolocation>;
 };
 
 export type Post = {
-   __typename?: 'Post',
-  id: Scalars['ID'],
-  name: Scalars['String'],
-  start: Scalars['DateTime'],
-  finish: Scalars['DateTime'],
-  discription?: Maybe<Scalars['String']>,
-  sumbnail?: Maybe<Scalars['String']>,
-  images: Array<Maybe<Scalars['String']>>,
-  visitors: Array<Maybe<Visitor>>,
-  orner: Orner,
-  address?: Maybe<Scalars['String']>,
-  location?: Maybe<Geolocation>,
-  target: Target,
+  __typename?: "Post";
+  id: Scalars["ID"];
+  name: Scalars["String"];
+  start: Scalars["DateTime"];
+  finish: Scalars["DateTime"];
+  discription?: Maybe<Scalars["String"]>;
+  sumbnail?: Maybe<Scalars["String"]>;
+  images: Array<Maybe<Scalars["String"]>>;
+  visitors: Array<Maybe<Visitor>>;
+  orner: Orner;
+  address?: Maybe<Scalars["String"]>;
+  location?: Maybe<Geolocation>;
+  target: Target;
 };
 
 export type Query = {
-   __typename?: 'Query',
-  user: User,
-  users: Array<Maybe<User>>,
-  orner: Orner,
-  orners: Array<Maybe<Orner>>,
-  post: Post,
-  posts: Array<Maybe<Post>>,
+  __typename?: "Query";
+  user: User;
+  users: Array<Maybe<User>>;
+  orner: Orner;
+  orners: Array<Maybe<Orner>>;
+  post: Post;
+  posts: Array<Maybe<Post>>;
 };
-
 
 export type QueryUserArgs = {
-  email: Scalars['ID']
+  email: Scalars["ID"];
 };
-
 
 export type QueryOrnerArgs = {
-  id: Scalars['ID']
+  id: Scalars["ID"];
 };
 
-
 export type QueryPostArgs = {
-  id: Scalars['ID']
+  id: Scalars["ID"];
 };
 
 export type Target = {
-   __typename?: 'Target',
-  ageGroup?: Maybe<Scalars['Int']>,
-  gender?: Maybe<Scalars['Int']>,
+  __typename?: "Target";
+  ageGroup?: Maybe<Scalars["Int"]>;
+  gender?: Maybe<Scalars["Int"]>;
 };
 
 export type TargetInput = {
-  ageGroup?: Maybe<Scalars['Int']>,
-  gender?: Maybe<Scalars['Int']>,
+  ageGroup?: Maybe<Scalars["Int"]>;
+  gender?: Maybe<Scalars["Int"]>;
 };
 
 export type User = {
-   __typename?: 'User',
-  email: Scalars['ID'],
-  password: Scalars['String'],
-  permission: Scalars['String'],
+  __typename?: "User";
+  email: Scalars["ID"];
+  password: Scalars["String"];
+  permission: Scalars["String"];
 };
 
 export type Visitor = {
-   __typename?: 'Visitor',
-  visitorName: Scalars['String'],
-  discription?: Maybe<Scalars['String']>,
-  sumbnail?: Maybe<Scalars['String']>,
+  __typename?: "Visitor";
+  visitorName: Scalars["String"];
+  discription?: Maybe<Scalars["String"]>;
+  sumbnail?: Maybe<Scalars["String"]>;
 };
 
 export type AddOrnerMutationVariables = {
-  email: Scalars['ID'],
-  name: Scalars['String'],
-  discription?: Maybe<Scalars['String']>,
-  icon?: Maybe<Scalars['String']>,
-  images: Array<Maybe<Scalars['String']>>,
-  address?: Maybe<Scalars['String']>,
-  location?: Maybe<GeolocationInput>
+  email: Scalars["ID"];
+  name: Scalars["String"];
+  discription?: Maybe<Scalars["String"]>;
+  icon?: Maybe<Scalars["String"]>;
+  images: Array<Maybe<Scalars["String"]>>;
+  address?: Maybe<Scalars["String"]>;
+  location?: Maybe<GeolocationInput>;
 };
 
-
-export type AddOrnerMutation = (
-  { __typename?: 'Mutation' }
-  & { addOrner: (
-    { __typename?: 'Orner' }
-    & Pick<Orner, 'id' | 'email' | 'name' | 'discription' | 'icon' | 'images' | 'address'>
-    & { location: Maybe<(
-      { __typename?: 'Geolocation' }
-      & Pick<Geolocation, 'xIndex' | 'yIndex'>
-    )> }
-  ) }
-);
+export type AddOrnerMutation = { __typename?: "Mutation" } & {
+  addOrner: { __typename?: "Orner" } & Pick<
+    Orner,
+    "id" | "email" | "name" | "discription" | "icon" | "images" | "address"
+  > & {
+      location: Maybe<
+        { __typename?: "Geolocation" } & Pick<Geolocation, "xIndex" | "yIndex">
+      >;
+    };
+};
 
 export type AddPostMutationVariables = {
-  name: Scalars['String'],
-  start: Scalars['DateTime'],
-  finish: Scalars['DateTime'],
-  discription?: Maybe<Scalars['String']>,
-  sumbnail?: Maybe<Scalars['String']>,
-  images: Array<Maybe<Scalars['String']>>,
-  ornerId: Scalars['String'],
-  address?: Maybe<Scalars['String']>,
-  location?: Maybe<GeolocationInput>,
-  target: TargetInput
+  name: Scalars["String"];
+  start: Scalars["DateTime"];
+  finish: Scalars["DateTime"];
+  discription?: Maybe<Scalars["String"]>;
+  sumbnail?: Maybe<Scalars["String"]>;
+  images: Array<Maybe<Scalars["String"]>>;
+  ornerId: Scalars["String"];
+  address?: Maybe<Scalars["String"]>;
+  location?: Maybe<GeolocationInput>;
+  target: TargetInput;
 };
 
-
-export type AddPostMutation = (
-  { __typename?: 'Mutation' }
-  & { addPost: (
-    { __typename?: 'Post' }
-    & Pick<Post, 'id' | 'name' | 'start' | 'finish' | 'discription' | 'sumbnail' | 'images' | 'address'>
-    & { visitors: Array<Maybe<(
-      { __typename?: 'Visitor' }
-      & Pick<Visitor, 'visitorName' | 'discription' | 'sumbnail'>
-    )>>, orner: (
-      { __typename?: 'Orner' }
-      & Pick<Orner, 'id' | 'email' | 'name' | 'discription' | 'icon' | 'images' | 'address'>
-      & { location: Maybe<(
-        { __typename?: 'Geolocation' }
-        & Pick<Geolocation, 'xIndex' | 'yIndex'>
-      )> }
-    ), location: Maybe<(
-      { __typename?: 'Geolocation' }
-      & Pick<Geolocation, 'xIndex' | 'yIndex'>
-    )>, target: (
-      { __typename?: 'Target' }
-      & Pick<Target, 'ageGroup' | 'gender'>
-    ) }
-  ) }
-);
+export type AddPostMutation = { __typename?: "Mutation" } & {
+  addPost: { __typename?: "Post" } & Pick<
+    Post,
+    | "id"
+    | "name"
+    | "start"
+    | "finish"
+    | "discription"
+    | "sumbnail"
+    | "images"
+    | "address"
+  > & {
+      visitors: Array<
+        Maybe<
+          { __typename?: "Visitor" } & Pick<
+            Visitor,
+            "visitorName" | "discription" | "sumbnail"
+          >
+        >
+      >;
+      orner: { __typename?: "Orner" } & Pick<
+        Orner,
+        "id" | "email" | "name" | "discription" | "icon" | "images" | "address"
+      > & {
+          location: Maybe<
+            { __typename?: "Geolocation" } & Pick<
+              Geolocation,
+              "xIndex" | "yIndex"
+            >
+          >;
+        };
+      location: Maybe<
+        { __typename?: "Geolocation" } & Pick<Geolocation, "xIndex" | "yIndex">
+      >;
+      target: { __typename?: "Target" } & Pick<Target, "ageGroup" | "gender">;
+    };
+};
 
 export type AddUserMutationVariables = {
-  email: Scalars['ID'],
-  password: Scalars['String']
+  email: Scalars["ID"];
+  password: Scalars["String"];
 };
 
-
-export type AddUserMutation = (
-  { __typename?: 'Mutation' }
-  & { addUser: (
-    { __typename?: 'User' }
-    & Pick<User, 'email' | 'permission'>
-  ) }
-);
+export type AddUserMutation = { __typename?: "Mutation" } & {
+  addUser: { __typename?: "User" } & Pick<User, "email" | "permission">;
+};
 
 export type DeletePostMutationVariables = {
-  id: Scalars['ID']
+  id: Scalars["ID"];
 };
 
-
-export type DeletePostMutation = (
-  { __typename?: 'Mutation' }
-  & { deletePost: (
-    { __typename?: 'Post' }
-    & Pick<Post, 'id' | 'name' | 'start' | 'finish' | 'discription' | 'sumbnail' | 'images' | 'address'>
-    & { visitors: Array<Maybe<(
-      { __typename?: 'Visitor' }
-      & Pick<Visitor, 'visitorName' | 'discription' | 'sumbnail'>
-    )>>, orner: (
-      { __typename?: 'Orner' }
-      & Pick<Orner, 'id' | 'email' | 'discription' | 'icon' | 'images' | 'address'>
-      & { location: Maybe<(
-        { __typename?: 'Geolocation' }
-        & Pick<Geolocation, 'xIndex' | 'yIndex'>
-      )> }
-    ), location: Maybe<(
-      { __typename?: 'Geolocation' }
-      & Pick<Geolocation, 'xIndex' | 'yIndex'>
-    )>, target: (
-      { __typename?: 'Target' }
-      & Pick<Target, 'ageGroup' | 'gender'>
-    ) }
-  ) }
-);
+export type DeletePostMutation = { __typename?: "Mutation" } & {
+  deletePost: { __typename?: "Post" } & Pick<
+    Post,
+    | "id"
+    | "name"
+    | "start"
+    | "finish"
+    | "discription"
+    | "sumbnail"
+    | "images"
+    | "address"
+  > & {
+      visitors: Array<
+        Maybe<
+          { __typename?: "Visitor" } & Pick<
+            Visitor,
+            "visitorName" | "discription" | "sumbnail"
+          >
+        >
+      >;
+      orner: { __typename?: "Orner" } & Pick<
+        Orner,
+        "id" | "email" | "discription" | "icon" | "images" | "address"
+      > & {
+          location: Maybe<
+            { __typename?: "Geolocation" } & Pick<
+              Geolocation,
+              "xIndex" | "yIndex"
+            >
+          >;
+        };
+      location: Maybe<
+        { __typename?: "Geolocation" } & Pick<Geolocation, "xIndex" | "yIndex">
+      >;
+      target: { __typename?: "Target" } & Pick<Target, "ageGroup" | "gender">;
+    };
+};
 
 export type DeleteUserMutationVariables = {
-  email: Scalars['ID']
+  email: Scalars["ID"];
 };
 
-
-export type DeleteUserMutation = (
-  { __typename?: 'Mutation' }
-  & { deleteUser: (
-    { __typename?: 'User' }
-    & Pick<User, 'email' | 'permission'>
-  ) }
-);
+export type DeleteUserMutation = { __typename?: "Mutation" } & {
+  deleteUser: { __typename?: "User" } & Pick<User, "email" | "permission">;
+};
 
 export type UpdateOrnerMutationVariables = {
-  id: Scalars['ID'],
-  email?: Maybe<Scalars['ID']>,
-  name?: Maybe<Scalars['String']>,
-  discription?: Maybe<Scalars['String']>,
-  icon?: Maybe<Scalars['String']>,
-  images?: Maybe<Array<Maybe<Scalars['String']>>>,
-  address?: Maybe<Scalars['String']>,
-  location?: Maybe<GeolocationInput>
+  id: Scalars["ID"];
+  email?: Maybe<Scalars["ID"]>;
+  name?: Maybe<Scalars["String"]>;
+  discription?: Maybe<Scalars["String"]>;
+  icon?: Maybe<Scalars["String"]>;
+  images?: Maybe<Array<Maybe<Scalars["String"]>>>;
+  address?: Maybe<Scalars["String"]>;
+  location?: Maybe<GeolocationInput>;
 };
 
-
-export type UpdateOrnerMutation = (
-  { __typename?: 'Mutation' }
-  & { updateOrner: (
-    { __typename?: 'Orner' }
-    & Pick<Orner, 'id' | 'email' | 'name' | 'discription' | 'icon' | 'images' | 'address'>
-    & { location: Maybe<(
-      { __typename?: 'Geolocation' }
-      & Pick<Geolocation, 'xIndex' | 'yIndex'>
-    )> }
-  ) }
-);
+export type UpdateOrnerMutation = { __typename?: "Mutation" } & {
+  updateOrner: { __typename?: "Orner" } & Pick<
+    Orner,
+    "id" | "email" | "name" | "discription" | "icon" | "images" | "address"
+  > & {
+      location: Maybe<
+        { __typename?: "Geolocation" } & Pick<Geolocation, "xIndex" | "yIndex">
+      >;
+    };
+};
 
 export type OrnerQueryVariables = {
-  id: Scalars['ID']
+  id: Scalars["ID"];
 };
 
-
-export type OrnerQuery = (
-  { __typename?: 'Query' }
-  & { orner: (
-    { __typename?: 'Orner' }
-    & Pick<Orner, 'id' | 'email' | 'name' | 'discription' | 'icon' | 'images' | 'address'>
-    & { location: Maybe<(
-      { __typename?: 'Geolocation' }
-      & Pick<Geolocation, 'xIndex' | 'yIndex'>
-    )> }
-  ) }
-);
+export type OrnerQuery = { __typename?: "Query" } & {
+  orner: { __typename?: "Orner" } & Pick<
+    Orner,
+    "id" | "email" | "name" | "discription" | "icon" | "images" | "address"
+  > & {
+      location: Maybe<
+        { __typename?: "Geolocation" } & Pick<Geolocation, "xIndex" | "yIndex">
+      >;
+    };
+};
 
 export type OrnersQueryVariables = {};
 
-
-export type OrnersQuery = (
-  { __typename?: 'Query' }
-  & { orners: Array<Maybe<(
-    { __typename?: 'Orner' }
-    & Pick<Orner, 'id' | 'email' | 'name' | 'discription' | 'icon' | 'images' | 'address'>
-    & { location: Maybe<(
-      { __typename?: 'Geolocation' }
-      & Pick<Geolocation, 'xIndex' | 'yIndex'>
-    )> }
-  )>> }
-);
-
-export type PostQueryVariables = {
-  id: Scalars['ID']
+export type OrnersQuery = { __typename?: "Query" } & {
+  orners: Array<
+    Maybe<
+      { __typename?: "Orner" } & Pick<
+        Orner,
+        "id" | "email" | "name" | "discription" | "icon" | "images" | "address"
+      > & {
+          location: Maybe<
+            { __typename?: "Geolocation" } & Pick<
+              Geolocation,
+              "xIndex" | "yIndex"
+            >
+          >;
+        }
+    >
+  >;
 };
 
+export type PostQueryVariables = {
+  id: Scalars["ID"];
+};
 
-export type PostQuery = (
-  { __typename?: 'Query' }
-  & { post: (
-    { __typename?: 'Post' }
-    & Pick<Post, 'id' | 'name' | 'start' | 'finish' | 'discription' | 'sumbnail' | 'images' | 'address'>
-    & { visitors: Array<Maybe<(
-      { __typename?: 'Visitor' }
-      & Pick<Visitor, 'visitorName' | 'discription' | 'sumbnail'>
-    )>>, orner: (
-      { __typename?: 'Orner' }
-      & Pick<Orner, 'id' | 'email' | 'name' | 'discription' | 'icon' | 'images' | 'address'>
-      & { location: Maybe<(
-        { __typename?: 'Geolocation' }
-        & Pick<Geolocation, 'xIndex' | 'yIndex'>
-      )> }
-    ), location: Maybe<(
-      { __typename?: 'Geolocation' }
-      & Pick<Geolocation, 'xIndex' | 'yIndex'>
-    )>, target: (
-      { __typename?: 'Target' }
-      & Pick<Target, 'ageGroup' | 'gender'>
-    ) }
-  ) }
-);
+export type PostQuery = { __typename?: "Query" } & {
+  post: { __typename?: "Post" } & Pick<
+    Post,
+    | "id"
+    | "name"
+    | "start"
+    | "finish"
+    | "discription"
+    | "sumbnail"
+    | "images"
+    | "address"
+  > & {
+      visitors: Array<
+        Maybe<
+          { __typename?: "Visitor" } & Pick<
+            Visitor,
+            "visitorName" | "discription" | "sumbnail"
+          >
+        >
+      >;
+      orner: { __typename?: "Orner" } & Pick<
+        Orner,
+        "id" | "email" | "name" | "discription" | "icon" | "images" | "address"
+      > & {
+          location: Maybe<
+            { __typename?: "Geolocation" } & Pick<
+              Geolocation,
+              "xIndex" | "yIndex"
+            >
+          >;
+        };
+      location: Maybe<
+        { __typename?: "Geolocation" } & Pick<Geolocation, "xIndex" | "yIndex">
+      >;
+      target: { __typename?: "Target" } & Pick<Target, "ageGroup" | "gender">;
+    };
+};
 
 export type PostsQueryVariables = {};
 
-
-export type PostsQuery = (
-  { __typename?: 'Query' }
-  & { posts: Array<Maybe<(
-    { __typename?: 'Post' }
-    & Pick<Post, 'id' | 'name' | 'start' | 'finish' | 'discription' | 'sumbnail' | 'images' | 'address'>
-    & { visitors: Array<Maybe<(
-      { __typename?: 'Visitor' }
-      & Pick<Visitor, 'visitorName' | 'discription' | 'sumbnail'>
-    )>>, orner: (
-      { __typename?: 'Orner' }
-      & Pick<Orner, 'id' | 'email' | 'name' | 'discription' | 'icon' | 'images' | 'address'>
-      & { location: Maybe<(
-        { __typename?: 'Geolocation' }
-        & Pick<Geolocation, 'xIndex' | 'yIndex'>
-      )> }
-    ), location: Maybe<(
-      { __typename?: 'Geolocation' }
-      & Pick<Geolocation, 'xIndex' | 'yIndex'>
-    )>, target: (
-      { __typename?: 'Target' }
-      & Pick<Target, 'ageGroup' | 'gender'>
-    ) }
-  )>> }
-);
-
-export type UserQueryVariables = {
-  email: Scalars['ID']
+export type PostsQuery = { __typename?: "Query" } & {
+  posts: Array<
+    Maybe<
+      { __typename?: "Post" } & Pick<
+        Post,
+        | "id"
+        | "name"
+        | "start"
+        | "finish"
+        | "discription"
+        | "sumbnail"
+        | "images"
+        | "address"
+      > & {
+          visitors: Array<
+            Maybe<
+              { __typename?: "Visitor" } & Pick<
+                Visitor,
+                "visitorName" | "discription" | "sumbnail"
+              >
+            >
+          >;
+          orner: { __typename?: "Orner" } & Pick<
+            Orner,
+            | "id"
+            | "email"
+            | "name"
+            | "discription"
+            | "icon"
+            | "images"
+            | "address"
+          > & {
+              location: Maybe<
+                { __typename?: "Geolocation" } & Pick<
+                  Geolocation,
+                  "xIndex" | "yIndex"
+                >
+              >;
+            };
+          location: Maybe<
+            { __typename?: "Geolocation" } & Pick<
+              Geolocation,
+              "xIndex" | "yIndex"
+            >
+          >;
+          target: { __typename?: "Target" } & Pick<
+            Target,
+            "ageGroup" | "gender"
+          >;
+        }
+    >
+  >;
 };
 
+export type UserQueryVariables = {
+  email: Scalars["ID"];
+};
 
-export type UserQuery = (
-  { __typename?: 'Query' }
-  & { user: (
-    { __typename?: 'User' }
-    & Pick<User, 'email' | 'permission'>
-  ) }
-);
+export type UserQuery = { __typename?: "Query" } & {
+  user: { __typename?: "User" } & Pick<User, "email" | "permission">;
+};
 
 export type UsersQueryVariables = {};
 
-
-export type UsersQuery = (
-  { __typename?: 'Query' }
-  & { users: Array<Maybe<(
-    { __typename?: 'User' }
-    & Pick<User, 'email' | 'permission'>
-  )>> }
-);
-
+export type UsersQuery = { __typename?: "Query" } & {
+  users: Array<
+    Maybe<{ __typename?: "User" } & Pick<User, "email" | "permission">>
+  >;
+};
 
 export const AddOrnerDocument = gql`
-    mutation addOrner($email: ID!, $name: String!, $discription: String, $icon: String, $images: [String]!, $address: String, $location: GeolocationInput) {
-  addOrner(email: $email, name: $name, discription: $discription, icon: $icon, images: $images, address: $address, location: $location) {
-    id
-    email
-    name
-    discription
-    icon
-    images
-    address
-    location {
-      xIndex
-      yIndex
+  mutation addOrner(
+    $email: ID!
+    $name: String!
+    $discription: String
+    $icon: String
+    $images: [String]!
+    $address: String
+    $location: GeolocationInput
+  ) {
+    addOrner(
+      email: $email
+      name: $name
+      discription: $discription
+      icon: $icon
+      images: $images
+      address: $address
+      location: $location
+    ) {
+      id
+      email
+      name
+      discription
+      icon
+      images
+      address
+      location {
+        xIndex
+        yIndex
+      }
     }
   }
-}
-    `;
-export type AddOrnerMutationFn = ApolloReactCommon.MutationFunction<AddOrnerMutation, AddOrnerMutationVariables>;
+`;
+export type AddOrnerMutationFn = ApolloReactCommon.MutationFunction<
+  AddOrnerMutation,
+  AddOrnerMutationVariables
+>;
 
 /**
  * __useAddOrnerMutation__
@@ -465,53 +519,91 @@ export type AddOrnerMutationFn = ApolloReactCommon.MutationFunction<AddOrnerMuta
  *   },
  * });
  */
-export function useAddOrnerMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<AddOrnerMutation, AddOrnerMutationVariables>) {
-        return ApolloReactHooks.useMutation<AddOrnerMutation, AddOrnerMutationVariables>(AddOrnerDocument, baseOptions);
-      }
+export function useAddOrnerMutation(
+  baseOptions?: ApolloReactHooks.MutationHookOptions<
+    AddOrnerMutation,
+    AddOrnerMutationVariables
+  >
+) {
+  return ApolloReactHooks.useMutation<
+    AddOrnerMutation,
+    AddOrnerMutationVariables
+  >(AddOrnerDocument, baseOptions);
+}
 export type AddOrnerMutationHookResult = ReturnType<typeof useAddOrnerMutation>;
-export type AddOrnerMutationResult = ApolloReactCommon.MutationResult<AddOrnerMutation>;
-export type AddOrnerMutationOptions = ApolloReactCommon.BaseMutationOptions<AddOrnerMutation, AddOrnerMutationVariables>;
+export type AddOrnerMutationResult = ApolloReactCommon.MutationResult<
+  AddOrnerMutation
+>;
+export type AddOrnerMutationOptions = ApolloReactCommon.BaseMutationOptions<
+  AddOrnerMutation,
+  AddOrnerMutationVariables
+>;
 export const AddPostDocument = gql`
-    mutation addPost($name: String!, $start: DateTime!, $finish: DateTime!, $discription: String, $sumbnail: String, $images: [String]!, $ornerId: String!, $address: String, $location: GeolocationInput, $target: TargetInput!) {
-  addPost(name: $name, start: $start, finish: $finish, discription: $discription, sumbnail: $sumbnail, images: $images, ornerId: $ornerId, address: $address, location: $location, target: $target) {
-    id
-    name
-    start
-    finish
-    discription
-    sumbnail
-    images
-    visitors {
-      visitorName
+  mutation addPost(
+    $name: String!
+    $start: DateTime!
+    $finish: DateTime!
+    $discription: String
+    $sumbnail: String
+    $images: [String]!
+    $ornerId: String!
+    $address: String
+    $location: GeolocationInput
+    $target: TargetInput!
+  ) {
+    addPost(
+      name: $name
+      start: $start
+      finish: $finish
+      discription: $discription
+      sumbnail: $sumbnail
+      images: $images
+      ornerId: $ornerId
+      address: $address
+      location: $location
+      target: $target
+    ) {
+      id
+      name
+      start
+      finish
       discription
       sumbnail
-    }
-    orner {
-      id
-      email
-      name
-      discription
-      icon
       images
+      visitors {
+        visitorName
+        discription
+        sumbnail
+      }
+      orner {
+        id
+        email
+        name
+        discription
+        icon
+        images
+        address
+        location {
+          xIndex
+          yIndex
+        }
+      }
       address
       location {
         xIndex
         yIndex
       }
-    }
-    address
-    location {
-      xIndex
-      yIndex
-    }
-    target {
-      ageGroup
-      gender
+      target {
+        ageGroup
+        gender
+      }
     }
   }
-}
-    `;
-export type AddPostMutationFn = ApolloReactCommon.MutationFunction<AddPostMutation, AddPostMutationVariables>;
+`;
+export type AddPostMutationFn = ApolloReactCommon.MutationFunction<
+  AddPostMutation,
+  AddPostMutationVariables
+>;
 
 /**
  * __useAddPostMutation__
@@ -539,21 +631,37 @@ export type AddPostMutationFn = ApolloReactCommon.MutationFunction<AddPostMutati
  *   },
  * });
  */
-export function useAddPostMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<AddPostMutation, AddPostMutationVariables>) {
-        return ApolloReactHooks.useMutation<AddPostMutation, AddPostMutationVariables>(AddPostDocument, baseOptions);
-      }
-export type AddPostMutationHookResult = ReturnType<typeof useAddPostMutation>;
-export type AddPostMutationResult = ApolloReactCommon.MutationResult<AddPostMutation>;
-export type AddPostMutationOptions = ApolloReactCommon.BaseMutationOptions<AddPostMutation, AddPostMutationVariables>;
-export const AddUserDocument = gql`
-    mutation addUser($email: ID!, $password: String!) {
-  addUser(email: $email, password: $password) {
-    email
-    permission
-  }
+export function useAddPostMutation(
+  baseOptions?: ApolloReactHooks.MutationHookOptions<
+    AddPostMutation,
+    AddPostMutationVariables
+  >
+) {
+  return ApolloReactHooks.useMutation<
+    AddPostMutation,
+    AddPostMutationVariables
+  >(AddPostDocument, baseOptions);
 }
-    `;
-export type AddUserMutationFn = ApolloReactCommon.MutationFunction<AddUserMutation, AddUserMutationVariables>;
+export type AddPostMutationHookResult = ReturnType<typeof useAddPostMutation>;
+export type AddPostMutationResult = ApolloReactCommon.MutationResult<
+  AddPostMutation
+>;
+export type AddPostMutationOptions = ApolloReactCommon.BaseMutationOptions<
+  AddPostMutation,
+  AddPostMutationVariables
+>;
+export const AddUserDocument = gql`
+  mutation addUser($email: ID!, $password: String!) {
+    addUser(email: $email, password: $password) {
+      email
+      permission
+    }
+  }
+`;
+export type AddUserMutationFn = ApolloReactCommon.MutationFunction<
+  AddUserMutation,
+  AddUserMutationVariables
+>;
 
 /**
  * __useAddUserMutation__
@@ -573,52 +681,68 @@ export type AddUserMutationFn = ApolloReactCommon.MutationFunction<AddUserMutati
  *   },
  * });
  */
-export function useAddUserMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<AddUserMutation, AddUserMutationVariables>) {
-        return ApolloReactHooks.useMutation<AddUserMutation, AddUserMutationVariables>(AddUserDocument, baseOptions);
-      }
+export function useAddUserMutation(
+  baseOptions?: ApolloReactHooks.MutationHookOptions<
+    AddUserMutation,
+    AddUserMutationVariables
+  >
+) {
+  return ApolloReactHooks.useMutation<
+    AddUserMutation,
+    AddUserMutationVariables
+  >(AddUserDocument, baseOptions);
+}
 export type AddUserMutationHookResult = ReturnType<typeof useAddUserMutation>;
-export type AddUserMutationResult = ApolloReactCommon.MutationResult<AddUserMutation>;
-export type AddUserMutationOptions = ApolloReactCommon.BaseMutationOptions<AddUserMutation, AddUserMutationVariables>;
+export type AddUserMutationResult = ApolloReactCommon.MutationResult<
+  AddUserMutation
+>;
+export type AddUserMutationOptions = ApolloReactCommon.BaseMutationOptions<
+  AddUserMutation,
+  AddUserMutationVariables
+>;
 export const DeletePostDocument = gql`
-    mutation deletePost($id: ID!) {
-  deletePost(id: $id) {
-    id
-    name
-    start
-    finish
-    discription
-    sumbnail
-    images
-    visitors {
-      visitorName
+  mutation deletePost($id: ID!) {
+    deletePost(id: $id) {
+      id
+      name
+      start
+      finish
       discription
       sumbnail
-    }
-    orner {
-      id
-      email
-      discription
-      icon
       images
+      visitors {
+        visitorName
+        discription
+        sumbnail
+      }
+      orner {
+        id
+        email
+        discription
+        icon
+        images
+        address
+        location {
+          xIndex
+          yIndex
+        }
+      }
       address
       location {
         xIndex
         yIndex
       }
-    }
-    address
-    location {
-      xIndex
-      yIndex
-    }
-    target {
-      ageGroup
-      gender
+      target {
+        ageGroup
+        gender
+      }
     }
   }
-}
-    `;
-export type DeletePostMutationFn = ApolloReactCommon.MutationFunction<DeletePostMutation, DeletePostMutationVariables>;
+`;
+export type DeletePostMutationFn = ApolloReactCommon.MutationFunction<
+  DeletePostMutation,
+  DeletePostMutationVariables
+>;
 
 /**
  * __useDeletePostMutation__
@@ -637,21 +761,39 @@ export type DeletePostMutationFn = ApolloReactCommon.MutationFunction<DeletePost
  *   },
  * });
  */
-export function useDeletePostMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<DeletePostMutation, DeletePostMutationVariables>) {
-        return ApolloReactHooks.useMutation<DeletePostMutation, DeletePostMutationVariables>(DeletePostDocument, baseOptions);
-      }
-export type DeletePostMutationHookResult = ReturnType<typeof useDeletePostMutation>;
-export type DeletePostMutationResult = ApolloReactCommon.MutationResult<DeletePostMutation>;
-export type DeletePostMutationOptions = ApolloReactCommon.BaseMutationOptions<DeletePostMutation, DeletePostMutationVariables>;
-export const DeleteUserDocument = gql`
-    mutation deleteUser($email: ID!) {
-  deleteUser(email: $email) {
-    email
-    permission
-  }
+export function useDeletePostMutation(
+  baseOptions?: ApolloReactHooks.MutationHookOptions<
+    DeletePostMutation,
+    DeletePostMutationVariables
+  >
+) {
+  return ApolloReactHooks.useMutation<
+    DeletePostMutation,
+    DeletePostMutationVariables
+  >(DeletePostDocument, baseOptions);
 }
-    `;
-export type DeleteUserMutationFn = ApolloReactCommon.MutationFunction<DeleteUserMutation, DeleteUserMutationVariables>;
+export type DeletePostMutationHookResult = ReturnType<
+  typeof useDeletePostMutation
+>;
+export type DeletePostMutationResult = ApolloReactCommon.MutationResult<
+  DeletePostMutation
+>;
+export type DeletePostMutationOptions = ApolloReactCommon.BaseMutationOptions<
+  DeletePostMutation,
+  DeletePostMutationVariables
+>;
+export const DeleteUserDocument = gql`
+  mutation deleteUser($email: ID!) {
+    deleteUser(email: $email) {
+      email
+      permission
+    }
+  }
+`;
+export type DeleteUserMutationFn = ApolloReactCommon.MutationFunction<
+  DeleteUserMutation,
+  DeleteUserMutationVariables
+>;
 
 /**
  * __useDeleteUserMutation__
@@ -670,30 +812,66 @@ export type DeleteUserMutationFn = ApolloReactCommon.MutationFunction<DeleteUser
  *   },
  * });
  */
-export function useDeleteUserMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<DeleteUserMutation, DeleteUserMutationVariables>) {
-        return ApolloReactHooks.useMutation<DeleteUserMutation, DeleteUserMutationVariables>(DeleteUserDocument, baseOptions);
-      }
-export type DeleteUserMutationHookResult = ReturnType<typeof useDeleteUserMutation>;
-export type DeleteUserMutationResult = ApolloReactCommon.MutationResult<DeleteUserMutation>;
-export type DeleteUserMutationOptions = ApolloReactCommon.BaseMutationOptions<DeleteUserMutation, DeleteUserMutationVariables>;
+export function useDeleteUserMutation(
+  baseOptions?: ApolloReactHooks.MutationHookOptions<
+    DeleteUserMutation,
+    DeleteUserMutationVariables
+  >
+) {
+  return ApolloReactHooks.useMutation<
+    DeleteUserMutation,
+    DeleteUserMutationVariables
+  >(DeleteUserDocument, baseOptions);
+}
+export type DeleteUserMutationHookResult = ReturnType<
+  typeof useDeleteUserMutation
+>;
+export type DeleteUserMutationResult = ApolloReactCommon.MutationResult<
+  DeleteUserMutation
+>;
+export type DeleteUserMutationOptions = ApolloReactCommon.BaseMutationOptions<
+  DeleteUserMutation,
+  DeleteUserMutationVariables
+>;
 export const UpdateOrnerDocument = gql`
-    mutation updateOrner($id: ID!, $email: ID, $name: String, $discription: String, $icon: String, $images: [String], $address: String, $location: GeolocationInput) {
-  updateOrner(id: $id, email: $email, name: $name, discription: $discription, icon: $icon, images: $images, address: $address, location: $location) {
-    id
-    email
-    name
-    discription
-    icon
-    images
-    address
-    location {
-      xIndex
-      yIndex
+  mutation updateOrner(
+    $id: ID!
+    $email: ID
+    $name: String
+    $discription: String
+    $icon: String
+    $images: [String]
+    $address: String
+    $location: GeolocationInput
+  ) {
+    updateOrner(
+      id: $id
+      email: $email
+      name: $name
+      discription: $discription
+      icon: $icon
+      images: $images
+      address: $address
+      location: $location
+    ) {
+      id
+      email
+      name
+      discription
+      icon
+      images
+      address
+      location {
+        xIndex
+        yIndex
+      }
     }
   }
-}
-    `;
-export type UpdateOrnerMutationFn = ApolloReactCommon.MutationFunction<UpdateOrnerMutation, UpdateOrnerMutationVariables>;
+`;
+export type UpdateOrnerMutationFn = ApolloReactCommon.MutationFunction<
+  UpdateOrnerMutation,
+  UpdateOrnerMutationVariables
+>;
 
 /**
  * __useUpdateOrnerMutation__
@@ -719,35 +897,50 @@ export type UpdateOrnerMutationFn = ApolloReactCommon.MutationFunction<UpdateOrn
  *   },
  * });
  */
-export function useUpdateOrnerMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<UpdateOrnerMutation, UpdateOrnerMutationVariables>) {
-        return ApolloReactHooks.useMutation<UpdateOrnerMutation, UpdateOrnerMutationVariables>(UpdateOrnerDocument, baseOptions);
-      }
-export type UpdateOrnerMutationHookResult = ReturnType<typeof useUpdateOrnerMutation>;
-export type UpdateOrnerMutationResult = ApolloReactCommon.MutationResult<UpdateOrnerMutation>;
-export type UpdateOrnerMutationOptions = ApolloReactCommon.BaseMutationOptions<UpdateOrnerMutation, UpdateOrnerMutationVariables>;
+export function useUpdateOrnerMutation(
+  baseOptions?: ApolloReactHooks.MutationHookOptions<
+    UpdateOrnerMutation,
+    UpdateOrnerMutationVariables
+  >
+) {
+  return ApolloReactHooks.useMutation<
+    UpdateOrnerMutation,
+    UpdateOrnerMutationVariables
+  >(UpdateOrnerDocument, baseOptions);
+}
+export type UpdateOrnerMutationHookResult = ReturnType<
+  typeof useUpdateOrnerMutation
+>;
+export type UpdateOrnerMutationResult = ApolloReactCommon.MutationResult<
+  UpdateOrnerMutation
+>;
+export type UpdateOrnerMutationOptions = ApolloReactCommon.BaseMutationOptions<
+  UpdateOrnerMutation,
+  UpdateOrnerMutationVariables
+>;
 export const OrnerDocument = gql`
-    query orner($id: ID!) {
-  orner(id: $id) {
-    id
-    email
-    name
-    discription
-    icon
-    images
-    address
-    location {
-      xIndex
-      yIndex
+  query orner($id: ID!) {
+    orner(id: $id) {
+      id
+      email
+      name
+      discription
+      icon
+      images
+      address
+      location {
+        xIndex
+        yIndex
+      }
     }
   }
-}
-    `;
+`;
 
 /**
  * __useOrnerQuery__
  *
  * To run a query within a React component, call `useOrnerQuery` and pass it any options that fit your needs.
- * When your component renders, `useOrnerQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * When your component renders, `useOrnerQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
@@ -759,73 +952,37 @@ export const OrnerDocument = gql`
  *   },
  * });
  */
-export function useOrnerQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<OrnerQuery, OrnerQueryVariables>) {
-        return ApolloReactHooks.useQuery<OrnerQuery, OrnerQueryVariables>(OrnerDocument, baseOptions);
-      }
-export function useOrnerLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<OrnerQuery, OrnerQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<OrnerQuery, OrnerQueryVariables>(OrnerDocument, baseOptions);
-        }
+export function useOrnerQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    OrnerQuery,
+    OrnerQueryVariables
+  >
+) {
+  return ApolloReactHooks.useQuery<OrnerQuery, OrnerQueryVariables>(
+    OrnerDocument,
+    baseOptions
+  );
+}
+export function useOrnerLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    OrnerQuery,
+    OrnerQueryVariables
+  >
+) {
+  return ApolloReactHooks.useLazyQuery<OrnerQuery, OrnerQueryVariables>(
+    OrnerDocument,
+    baseOptions
+  );
+}
 export type OrnerQueryHookResult = ReturnType<typeof useOrnerQuery>;
 export type OrnerLazyQueryHookResult = ReturnType<typeof useOrnerLazyQuery>;
-export type OrnerQueryResult = ApolloReactCommon.QueryResult<OrnerQuery, OrnerQueryVariables>;
+export type OrnerQueryResult = ApolloReactCommon.QueryResult<
+  OrnerQuery,
+  OrnerQueryVariables
+>;
 export const OrnersDocument = gql`
-    query orners {
-  orners {
-    id
-    email
-    name
-    discription
-    icon
-    images
-    address
-    location {
-      xIndex
-      yIndex
-    }
-  }
-}
-    `;
-
-/**
- * __useOrnersQuery__
- *
- * To run a query within a React component, call `useOrnersQuery` and pass it any options that fit your needs.
- * When your component renders, `useOrnersQuery` returns an object from Apollo Client that contains loading, error, and data properties 
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useOrnersQuery({
- *   variables: {
- *   },
- * });
- */
-export function useOrnersQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<OrnersQuery, OrnersQueryVariables>) {
-        return ApolloReactHooks.useQuery<OrnersQuery, OrnersQueryVariables>(OrnersDocument, baseOptions);
-      }
-export function useOrnersLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<OrnersQuery, OrnersQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<OrnersQuery, OrnersQueryVariables>(OrnersDocument, baseOptions);
-        }
-export type OrnersQueryHookResult = ReturnType<typeof useOrnersQuery>;
-export type OrnersLazyQueryHookResult = ReturnType<typeof useOrnersLazyQuery>;
-export type OrnersQueryResult = ApolloReactCommon.QueryResult<OrnersQuery, OrnersQueryVariables>;
-export const PostDocument = gql`
-    query post($id: ID!) {
-  post(id: $id) {
-    id
-    name
-    start
-    finish
-    discription
-    sumbnail
-    images
-    visitors {
-      visitorName
-      discription
-      sumbnail
-    }
-    orner {
+  query orners {
+    orners {
       id
       email
       name
@@ -838,24 +995,98 @@ export const PostDocument = gql`
         yIndex
       }
     }
-    address
-    location {
-      xIndex
-      yIndex
-    }
-    target {
-      ageGroup
-      gender
+  }
+`;
+
+/**
+ * __useOrnersQuery__
+ *
+ * To run a query within a React component, call `useOrnersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useOrnersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useOrnersQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useOrnersQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    OrnersQuery,
+    OrnersQueryVariables
+  >
+) {
+  return ApolloReactHooks.useQuery<OrnersQuery, OrnersQueryVariables>(
+    OrnersDocument,
+    baseOptions
+  );
+}
+export function useOrnersLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    OrnersQuery,
+    OrnersQueryVariables
+  >
+) {
+  return ApolloReactHooks.useLazyQuery<OrnersQuery, OrnersQueryVariables>(
+    OrnersDocument,
+    baseOptions
+  );
+}
+export type OrnersQueryHookResult = ReturnType<typeof useOrnersQuery>;
+export type OrnersLazyQueryHookResult = ReturnType<typeof useOrnersLazyQuery>;
+export type OrnersQueryResult = ApolloReactCommon.QueryResult<
+  OrnersQuery,
+  OrnersQueryVariables
+>;
+export const PostDocument = gql`
+  query post($id: ID!) {
+    post(id: $id) {
+      id
+      name
+      start
+      finish
+      discription
+      sumbnail
+      images
+      visitors {
+        visitorName
+        discription
+        sumbnail
+      }
+      orner {
+        id
+        email
+        name
+        discription
+        icon
+        images
+        address
+        location {
+          xIndex
+          yIndex
+        }
+      }
+      address
+      location {
+        xIndex
+        yIndex
+      }
+      target {
+        ageGroup
+        gender
+      }
     }
   }
-}
-    `;
+`;
 
 /**
  * __usePostQuery__
  *
  * To run a query within a React component, call `usePostQuery` and pass it any options that fit your needs.
- * When your component renders, `usePostQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * When your component renders, `usePostQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
@@ -867,61 +1098,77 @@ export const PostDocument = gql`
  *   },
  * });
  */
-export function usePostQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<PostQuery, PostQueryVariables>) {
-        return ApolloReactHooks.useQuery<PostQuery, PostQueryVariables>(PostDocument, baseOptions);
-      }
-export function usePostLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<PostQuery, PostQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<PostQuery, PostQueryVariables>(PostDocument, baseOptions);
-        }
+export function usePostQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<PostQuery, PostQueryVariables>
+) {
+  return ApolloReactHooks.useQuery<PostQuery, PostQueryVariables>(
+    PostDocument,
+    baseOptions
+  );
+}
+export function usePostLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    PostQuery,
+    PostQueryVariables
+  >
+) {
+  return ApolloReactHooks.useLazyQuery<PostQuery, PostQueryVariables>(
+    PostDocument,
+    baseOptions
+  );
+}
 export type PostQueryHookResult = ReturnType<typeof usePostQuery>;
 export type PostLazyQueryHookResult = ReturnType<typeof usePostLazyQuery>;
-export type PostQueryResult = ApolloReactCommon.QueryResult<PostQuery, PostQueryVariables>;
+export type PostQueryResult = ApolloReactCommon.QueryResult<
+  PostQuery,
+  PostQueryVariables
+>;
 export const PostsDocument = gql`
-    query posts {
-  posts {
-    id
-    name
-    start
-    finish
-    discription
-    sumbnail
-    images
-    visitors {
-      visitorName
+  query posts {
+    posts {
+      id
+      name
+      start
+      finish
       discription
       sumbnail
-    }
-    orner {
-      id
-      email
-      name
-      discription
-      icon
       images
+      visitors {
+        visitorName
+        discription
+        sumbnail
+      }
+      orner {
+        id
+        email
+        name
+        discription
+        icon
+        images
+        address
+        location {
+          xIndex
+          yIndex
+        }
+      }
       address
       location {
         xIndex
         yIndex
       }
-    }
-    address
-    location {
-      xIndex
-      yIndex
-    }
-    target {
-      ageGroup
-      gender
+      target {
+        ageGroup
+        gender
+      }
     }
   }
-}
-    `;
+`;
 
 /**
  * __usePostsQuery__
  *
  * To run a query within a React component, call `usePostsQuery` and pass it any options that fit your needs.
- * When your component renders, `usePostsQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * When your component renders, `usePostsQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
@@ -932,29 +1179,48 @@ export const PostsDocument = gql`
  *   },
  * });
  */
-export function usePostsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<PostsQuery, PostsQueryVariables>) {
-        return ApolloReactHooks.useQuery<PostsQuery, PostsQueryVariables>(PostsDocument, baseOptions);
-      }
-export function usePostsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<PostsQuery, PostsQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<PostsQuery, PostsQueryVariables>(PostsDocument, baseOptions);
-        }
+export function usePostsQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    PostsQuery,
+    PostsQueryVariables
+  >
+) {
+  return ApolloReactHooks.useQuery<PostsQuery, PostsQueryVariables>(
+    PostsDocument,
+    baseOptions
+  );
+}
+export function usePostsLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    PostsQuery,
+    PostsQueryVariables
+  >
+) {
+  return ApolloReactHooks.useLazyQuery<PostsQuery, PostsQueryVariables>(
+    PostsDocument,
+    baseOptions
+  );
+}
 export type PostsQueryHookResult = ReturnType<typeof usePostsQuery>;
 export type PostsLazyQueryHookResult = ReturnType<typeof usePostsLazyQuery>;
-export type PostsQueryResult = ApolloReactCommon.QueryResult<PostsQuery, PostsQueryVariables>;
+export type PostsQueryResult = ApolloReactCommon.QueryResult<
+  PostsQuery,
+  PostsQueryVariables
+>;
 export const UserDocument = gql`
-    query user($email: ID!) {
-  user(email: $email) {
-    email
-    permission
+  query user($email: ID!) {
+    user(email: $email) {
+      email
+      permission
+    }
   }
-}
-    `;
+`;
 
 /**
  * __useUserQuery__
  *
  * To run a query within a React component, call `useUserQuery` and pass it any options that fit your needs.
- * When your component renders, `useUserQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * When your component renders, `useUserQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
@@ -966,29 +1232,45 @@ export const UserDocument = gql`
  *   },
  * });
  */
-export function useUserQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<UserQuery, UserQueryVariables>) {
-        return ApolloReactHooks.useQuery<UserQuery, UserQueryVariables>(UserDocument, baseOptions);
-      }
-export function useUserLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<UserQuery, UserQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<UserQuery, UserQueryVariables>(UserDocument, baseOptions);
-        }
+export function useUserQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<UserQuery, UserQueryVariables>
+) {
+  return ApolloReactHooks.useQuery<UserQuery, UserQueryVariables>(
+    UserDocument,
+    baseOptions
+  );
+}
+export function useUserLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    UserQuery,
+    UserQueryVariables
+  >
+) {
+  return ApolloReactHooks.useLazyQuery<UserQuery, UserQueryVariables>(
+    UserDocument,
+    baseOptions
+  );
+}
 export type UserQueryHookResult = ReturnType<typeof useUserQuery>;
 export type UserLazyQueryHookResult = ReturnType<typeof useUserLazyQuery>;
-export type UserQueryResult = ApolloReactCommon.QueryResult<UserQuery, UserQueryVariables>;
+export type UserQueryResult = ApolloReactCommon.QueryResult<
+  UserQuery,
+  UserQueryVariables
+>;
 export const UsersDocument = gql`
-    query users {
-  users {
-    email
-    permission
+  query users {
+    users {
+      email
+      permission
+    }
   }
-}
-    `;
+`;
 
 /**
  * __useUsersQuery__
  *
  * To run a query within a React component, call `useUsersQuery` and pass it any options that fit your needs.
- * When your component renders, `useUsersQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * When your component renders, `useUsersQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
@@ -999,12 +1281,31 @@ export const UsersDocument = gql`
  *   },
  * });
  */
-export function useUsersQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<UsersQuery, UsersQueryVariables>) {
-        return ApolloReactHooks.useQuery<UsersQuery, UsersQueryVariables>(UsersDocument, baseOptions);
-      }
-export function useUsersLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<UsersQuery, UsersQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<UsersQuery, UsersQueryVariables>(UsersDocument, baseOptions);
-        }
+export function useUsersQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    UsersQuery,
+    UsersQueryVariables
+  >
+) {
+  return ApolloReactHooks.useQuery<UsersQuery, UsersQueryVariables>(
+    UsersDocument,
+    baseOptions
+  );
+}
+export function useUsersLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    UsersQuery,
+    UsersQueryVariables
+  >
+) {
+  return ApolloReactHooks.useLazyQuery<UsersQuery, UsersQueryVariables>(
+    UsersDocument,
+    baseOptions
+  );
+}
 export type UsersQueryHookResult = ReturnType<typeof useUsersQuery>;
 export type UsersLazyQueryHookResult = ReturnType<typeof useUsersLazyQuery>;
-export type UsersQueryResult = ApolloReactCommon.QueryResult<UsersQuery, UsersQueryVariables>;
+export type UsersQueryResult = ApolloReactCommon.QueryResult<
+  UsersQuery,
+  UsersQueryVariables
+>;
