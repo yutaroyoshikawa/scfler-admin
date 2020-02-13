@@ -11,7 +11,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 import TextField from "@material-ui/core/TextField";
 import { useSnackbar } from "notistack";
 import Title from "./Title";
-import { signIn } from "../common/auth";
+import { signIn, newPasswordChallenge } from "../common/auth";
 
 const useStyle = makeStyles((theme: Theme) => ({
   wrap: {
@@ -49,17 +49,31 @@ const LoginProvider: React.FC = props => {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const { token, cognitoUser } = await signIn(userName, password);
-      localStorage.setItem("token", token);
-      client.writeData({
-        data: {
-          isLoggedIn: true,
-          cognitoUser
-        }
-      });
+      const { cognitoUser, newPasswordRequired } = await signIn(
+        userName,
+        password
+      );
+      if (newPasswordRequired) {
+        const newResult = await newPasswordChallenge(password, cognitoUser);
+        client.writeData({
+          data: {
+            isLoggedIn: true,
+            cognitoUser: newResult.cognitoUser
+          }
+        });
+      }
+      if (!newPasswordChallenge) {
+        client.writeData({
+          data: {
+            isLoggedIn: true,
+            cognitoUser
+          }
+        });
+      }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.log(error);
-      enqueueSnackbar(error, {
+      enqueueSnackbar(JSON.stringify(error), {
         variant: "error"
       });
     }
@@ -74,7 +88,7 @@ const LoginProvider: React.FC = props => {
               <CardContent>
                 <Title>管理画面にログイン</Title>
                 <div className={classes.textFieldWrap}>
-                  <InputLabel>Email</InputLabel>
+                  <InputLabel>ユーザー名</InputLabel>
                   <TextField
                     value={userName}
                     required={true}

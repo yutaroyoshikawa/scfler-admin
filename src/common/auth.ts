@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   CognitoUserPool,
   AuthenticationDetails,
@@ -6,12 +7,12 @@ import {
 
 export const signIn = (userName: string, password: string) => {
   return new Promise<{
-    token: string;
     cognitoUser: CognitoUser;
+    newPasswordRequired: boolean;
   }>((resolve, reject) => {
     const userPool = new CognitoUserPool({
-      UserPoolId: "",
-      ClientId: ""
+      UserPoolId: process.env.REACT_APP_COGNITO_POOL_ID!,
+      ClientId: process.env.REACT_APP_COGNITO_CLIENT_ID!
     });
 
     const cognitoUser = new CognitoUser({
@@ -27,16 +28,46 @@ export const signIn = (userName: string, password: string) => {
     });
 
     cognitoUser.authenticateUser(authenticationDetails, {
-      onSuccess: result => {
+      onSuccess: () => {
         resolve({
-          token: result.getIdToken().getJwtToken(),
-          cognitoUser
+          cognitoUser,
+          newPasswordRequired: false
         });
       },
       onFailure: err => {
         reject(err);
+      },
+      newPasswordRequired: () => {
+        resolve({
+          cognitoUser,
+          newPasswordRequired: true
+        });
       }
     });
+  });
+};
+
+export const newPasswordChallenge = (
+  password: string,
+  cognitoUser: CognitoUser
+) => {
+  return new Promise<{
+    cognitoUser: CognitoUser;
+  }>((resolve, reject) => {
+    cognitoUser.completeNewPasswordChallenge(
+      password,
+      {},
+      {
+        onSuccess: () => {
+          resolve({
+            cognitoUser
+          });
+        },
+        onFailure: err => {
+          reject(err);
+        }
+      }
+    );
   });
 };
 

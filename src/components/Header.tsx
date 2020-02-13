@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import styled, { css } from "styled-components";
@@ -19,11 +20,14 @@ import { Theme } from "@material-ui/core/styles";
 import clsx from "clsx";
 import { useQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
+import { CognitoUserPool, CognitoUser } from "amazon-cognito-identity-js";
 import { pages } from "../App";
+import { signOut } from "../common/auth";
 
 const GET_LOGIN_STATE = gql`
   {
     isLoggedIn @client
+    cognitoUser @client
   }
 `;
 
@@ -72,12 +76,28 @@ const Header: React.FC<Props> = props => {
   const [isOpenDrawer, setIsDrawer] = useState<boolean>(true);
   const theme = useTheme();
   const classes = useStyle();
-  const { client } = useQuery(GET_LOGIN_STATE);
+  const { data, client } = useQuery(GET_LOGIN_STATE);
 
   const onLogout = () => {
+    signOut(
+      data.cognitoUser !== null
+        ? data.cognitoUser
+        : new CognitoUser({
+            Username: localStorage.getItem(
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              `CognitoIdentityServiceProvider.${process.env
+                .REACT_APP_COGNITO_CLIENT_ID!}.LastAuthUser`
+            )!,
+            Pool: new CognitoUserPool({
+              UserPoolId: process.env.REACT_APP_COGNITO_POOL_ID!,
+              ClientId: process.env.REACT_APP_COGNITO_CLIENT_ID!
+            })
+          })
+    );
     client.writeData({
       data: {
-        isLoggedIn: false
+        isLoggedIn: false,
+        cognitoUser: null
       }
     });
   };

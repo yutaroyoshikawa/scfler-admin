@@ -69,9 +69,19 @@ const client = new ApolloClient({
   cache
 });
 
+const lastLoginUser = localStorage.getItem(
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  `CognitoIdentityServiceProvider.${process.env
+    .REACT_APP_COGNITO_CLIENT_ID!}.LastAuthUser`
+);
+
 cache.writeData({
   data: {
-    isLoggedIn: !!localStorage.getItem("token"),
+    isLoggedIn: !!localStorage.getItem(
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      `CognitoIdentityServiceProvider.${process.env
+        .REACT_APP_COGNITO_CLIENT_ID!}.${lastLoginUser}.idToken`
+    ),
     cognitoUser: null
   }
 });
