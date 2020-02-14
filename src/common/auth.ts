@@ -79,7 +79,7 @@ export const newPasswordChallenge = (password: string) => {
         )
       : reject()
   );
-};
+}
 
 export const signOut = () => {
   if (cognitoUser !== null) {
