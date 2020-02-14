@@ -5,7 +5,21 @@ import {
   CognitoUser
 } from "amazon-cognito-identity-js";
 
-let cognitoUser: CognitoUser | null = null;
+const lastLogin = localStorage.getItem(
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  `CognitoIdentityServiceProvider.${process.env
+    .REACT_APP_COGNITO_CLIENT_ID!}.LastAuthUser`
+);
+
+let cognitoUser: CognitoUser | null = lastLogin
+  ? new CognitoUser({
+      Username: lastLogin,
+      Pool: new CognitoUserPool({
+        UserPoolId: process.env.REACT_APP_COGNITO_POOL_ID!,
+        ClientId: process.env.REACT_APP_COGNITO_CLIENT_ID!
+      })
+    })
+  : null;
 
 export const signIn = (userName: string, password: string) => {
   return new Promise<{
@@ -29,8 +43,7 @@ export const signIn = (userName: string, password: string) => {
     });
 
     cognitoUser.authenticateUser(authenticationDetails, {
-      onSuccess: result => {
-        localStorage.setItem("sicflerToken", result.getIdToken().getJwtToken());
+      onSuccess: () => {
         resolve({
           newPasswordRequired: false
         });
@@ -70,7 +83,6 @@ export const newPasswordChallenge = (password: string) => {
 
 export const signOut = () => {
   if (cognitoUser !== null) {
-    localStorage.removeItem("sicflerToken");
     cognitoUser.signOut();
   }
 };
