@@ -14,6 +14,7 @@ import HomeIcon from "@material-ui/icons/Home";
 import People from "@material-ui/icons/People";
 import ContactMail from "@material-ui/icons/ContactMail";
 import { SnackbarProvider } from "notistack";
+import { setContext } from "apollo-link-context";
 import LoginProvider from "./components/LoginProvider";
 import Template from "./components/Template";
 import Admins from "./pages/Admins";
@@ -60,20 +61,38 @@ export const pages: PageItem[] = [
   }
 ];
 
-const cache = new InMemoryCache();
-
-const client = new ApolloClient({
-  link: createHttpLink({
-    uri: "https://api.sicfler.com/v1/graphql"
-  }),
-  cache
-});
-
 const lastLogin = localStorage.getItem(
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   `CognitoIdentityServiceProvider.${process.env
     .REACT_APP_COGNITO_CLIENT_ID!}.LastAuthUser`
 );
+
+const cache = new InMemoryCache();
+
+const httpLink = createHttpLink({
+  uri: "https://api.sicfler.com/v1/graphql"
+});
+
+const authLink = setContext((_, { headers }) => {
+  // get the authentication token from local storage if it exists
+  const token = localStorage.getItem(
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    `CognitoIdentityServiceProvider.${process.env
+      .REACT_APP_COGNITO_CLIENT_ID!}.${lastLogin}.accessToken`
+  );
+  // return the headers to the context so httpLink can read them
+  return {
+    headers: {
+      ...headers,
+      authorization: token || ""
+    }
+  };
+});
+
+const client = new ApolloClient({
+  link: authLink.concat(httpLink),
+  cache
+});
 
 cache.writeData({
   data: {
