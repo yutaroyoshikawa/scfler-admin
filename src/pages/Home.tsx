@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 import gql from "graphql-tag";
 import { makeStyles } from "@material-ui/styles";
 import Card from "@material-ui/core/Card";
@@ -43,10 +43,11 @@ const Home: React.FC = () => {
   });
   const classes = useStyle();
 
-  useCallback(() => {
-    enqueueSnackbar(error);
-    // eslint-disable-next-line
-  }, [error]);
+  if (error) {
+    enqueueSnackbar(error, {
+      variant: "error"
+    });
+  }
 
   return (
     <>
