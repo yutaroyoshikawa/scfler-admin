@@ -48,14 +48,14 @@ export const pages: PageItem[] = [
   {
     url: "/orners",
     name: "オーナー一覧",
-    icon: <People />,
+    icon: <ContactMail />,
     component: Orners,
     isAdmin: true
   },
   {
-    url: "/admins",
-    name: "管理者一覧",
-    icon: <ContactMail />,
+    url: "/users",
+    name: "ユーザー一覧",
+    icon: <People />,
     component: Admins,
     isAdmin: true
   }
