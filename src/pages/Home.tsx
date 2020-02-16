@@ -1,4 +1,5 @@
 import React from "react";
+import gql from "graphql-tag";
 import { makeStyles } from "@material-ui/styles";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
@@ -7,7 +8,7 @@ import Skeleten from "@material-ui/lab/Skeleton";
 import Divider from "@material-ui/core/Divider";
 import { Theme } from "@material-ui/core";
 import Title from "../components/Title";
-import { useUsersQuery } from "../gen/graphql-client-api";
+import { useMyInfoQuery } from "../gen/graphql-client-api";
 
 const useStyle = makeStyles((theme: Theme) => ({
   loginnedUserInfoWrap: {
@@ -25,8 +26,19 @@ const useStyle = makeStyles((theme: Theme) => ({
   }
 }));
 
-const Home: React.FC = props => {
-  const usersQuery = useUsersQuery();
+const GET_USERS = gql`
+  query {
+    myInfo {
+      id
+      role
+    }
+  }
+`;
+
+const Home: React.FC = () => {
+  const usersQuery = useMyInfoQuery({
+    query: GET_USERS
+  });
   const classes = useStyle();
 
   return (
@@ -48,7 +60,7 @@ const Home: React.FC = props => {
                 component="h2"
                 color="textPrimary"
               >
-                {usersQuery.data?.users[0]?.email}
+                {usersQuery.data?.myInfo.id}
               </Typography>
             )}
             <Divider className={classes.dividerSpacing} />
@@ -65,7 +77,7 @@ const Home: React.FC = props => {
                 component="h2"
                 color="textPrimary"
               >
-                {usersQuery.data?.users[0]?.permission}
+                {usersQuery.data?.myInfo.role}
               </Typography>
             )}
           </CardContent>
