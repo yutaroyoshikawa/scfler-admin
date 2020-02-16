@@ -61,6 +61,10 @@ export const pages: PageItem[] = [
   }
 ];
 
+export const global = {
+  token: ""
+};
+
 const lastLogin = localStorage.getItem(
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   `CognitoIdentityServiceProvider.${process.env
@@ -75,11 +79,12 @@ const httpLink = createHttpLink({
 
 const authLink = setContext((_, { headers }) => {
   // get the authentication token from local storage if it exists
-  const token = localStorage.getItem(
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    `CognitoIdentityServiceProvider.${process.env
-      .REACT_APP_COGNITO_CLIENT_ID!}.${lastLogin}.accessToken`
-  );
+  const token =
+    localStorage.getItem(
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      `CognitoIdentityServiceProvider.${process.env
+        .REACT_APP_COGNITO_CLIENT_ID!}.${lastLogin}.accessToken`
+    ) || global.token;
   // return the headers to the context so httpLink can read them
   return {
     headers: {

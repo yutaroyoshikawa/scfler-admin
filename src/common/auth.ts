@@ -4,6 +4,7 @@ import {
   AuthenticationDetails,
   CognitoUser
 } from "amazon-cognito-identity-js";
+import { global } from "../App";
 
 const lastLogin = localStorage.getItem(
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -43,7 +44,8 @@ export const signIn = (userName: string, password: string) => {
     });
 
     cognitoUser.authenticateUser(authenticationDetails, {
-      onSuccess: () => {
+      onSuccess: res => {
+        global.token = res.getAccessToken().getJwtToken();
         resolve({
           newPasswordRequired: false
         });
@@ -67,7 +69,8 @@ export const newPasswordChallenge = (password: string) => {
           password,
           {},
           {
-            onSuccess: () => {
+            onSuccess: res => {
+              global.token = res.getAccessToken().getJwtToken();
               resolve({
                 cognitoUser
               });
@@ -83,6 +86,7 @@ export const newPasswordChallenge = (password: string) => {
 
 export const signOut = () => {
   if (cognitoUser !== null) {
+    global.token = "";
     cognitoUser.signOut();
   }
 };
