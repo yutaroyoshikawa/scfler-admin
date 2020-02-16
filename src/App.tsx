@@ -17,7 +17,7 @@ import { SnackbarProvider } from "notistack";
 import { setContext } from "apollo-link-context";
 import LoginProvider from "./components/LoginProvider";
 import Template from "./components/Template";
-import Admins from "./pages/Admins";
+import Users from "./pages/Users";
 import Orners from "./pages/Orners";
 import Posts from "./pages/Posts";
 import Home from "./pages/Home";
@@ -56,7 +56,7 @@ export const pages: PageItem[] = [
     url: "/users",
     name: "ユーザー一覧",
     icon: <People />,
-    component: Admins,
+    component: Users,
     isAdmin: true
   }
 ];
