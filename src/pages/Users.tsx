@@ -7,7 +7,9 @@ const Users: React.FC = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   if (error) {
-    enqueueSnackbar(error);
+    enqueueSnackbar(error, {
+      variant: "error"
+    });
   }
 
   return (
