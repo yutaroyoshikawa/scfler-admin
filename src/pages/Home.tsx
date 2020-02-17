@@ -103,7 +103,7 @@ const Home: React.FC = () => {
                 component="h2"
                 color="textPrimary"
               >
-                {data?.myInfo.creationDate}
+                {new Date(data?.myInfo.creationDate).toUTCString()}
               </Typography>
             )}
             {data?.myInfo.lastModifiedDate && (
@@ -122,7 +122,7 @@ const Home: React.FC = () => {
                     component="h2"
                     color="textPrimary"
                   >
-                    {data?.myInfo.lastModifiedDate}
+                    {new Date(data?.myInfo.lastModifiedDate).toUTCString()}
                   </Typography>
                 )}
               </>
