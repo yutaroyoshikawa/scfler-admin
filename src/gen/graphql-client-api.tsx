@@ -27,12 +27,12 @@ export type GeolocationInput = {
 export type Mutation = {
    __typename?: 'Mutation',
   addUser: User,
-  deleteUser: User,
+  deleteUser: ReturnDelete,
   addOrner: Orner,
   updateOrner: Orner,
   addAdmin: User,
   addPost: Post,
-  deletePost: Post,
+  deletePost: ReturnDelete,
 };
 
 
@@ -124,8 +124,8 @@ export type Post = {
 
 export type Query = {
    __typename?: 'Query',
-  myInfo: UserDetails,
-  user: UserDetails,
+  myInfo: User,
+  user: User,
   users: Array<Maybe<User>>,
   orner: Orner,
   orners: Array<Maybe<Orner>>,
@@ -146,6 +146,11 @@ export type QueryOrnerArgs = {
 
 export type QueryPostArgs = {
   id: Scalars['ID']
+};
+
+export type ReturnDelete = {
+   __typename?: 'ReturnDelete',
+  id: Scalars['ID'],
 };
 
 export enum Roles {
@@ -170,13 +175,7 @@ export type User = {
   id: Scalars['ID'],
   creationDate: Scalars['DateTime'],
   lastModifiedDate?: Maybe<Scalars['DateTime']>,
-};
-
-export type UserDetails = {
-   __typename?: 'UserDetails',
-  id: Scalars['ID'],
-  creationDate: Scalars['DateTime'],
-  lastModifiedDate?: Maybe<Scalars['DateTime']>,
+  email: Scalars['String'],
   role: Roles,
 };
 
@@ -285,25 +284,8 @@ export type DeletePostMutationVariables = {
 export type DeletePostMutation = (
   { __typename?: 'Mutation' }
   & { deletePost: (
-    { __typename?: 'Post' }
-    & Pick<Post, 'id' | 'name' | 'start' | 'finish' | 'discription' | 'sumbnail' | 'images' | 'address'>
-    & { visitors: Array<Maybe<(
-      { __typename?: 'Visitor' }
-      & Pick<Visitor, 'visitorName' | 'discription' | 'sumbnail'>
-    )>>, orner: (
-      { __typename?: 'Orner' }
-      & Pick<Orner, 'id' | 'email' | 'discription' | 'icon' | 'images' | 'address'>
-      & { location: Maybe<(
-        { __typename?: 'Geolocation' }
-        & Pick<Geolocation, 'xIndex' | 'yIndex'>
-      )> }
-    ), location: Maybe<(
-      { __typename?: 'Geolocation' }
-      & Pick<Geolocation, 'xIndex' | 'yIndex'>
-    )>, target: (
-      { __typename?: 'Target' }
-      & Pick<Target, 'ageGroup' | 'gender'>
-    ) }
+    { __typename?: 'ReturnDelete' }
+    & Pick<ReturnDelete, 'id'>
   ) }
 );
 
@@ -315,8 +297,8 @@ export type DeleteUserMutationVariables = {
 export type DeleteUserMutation = (
   { __typename?: 'Mutation' }
   & { deleteUser: (
-    { __typename?: 'User' }
-    & Pick<User, 'id'>
+    { __typename?: 'ReturnDelete' }
+    & Pick<ReturnDelete, 'id'>
   ) }
 );
 
@@ -350,8 +332,8 @@ export type MyInfoQueryVariables = {};
 export type MyInfoQuery = (
   { __typename?: 'Query' }
   & { myInfo: (
-    { __typename?: 'UserDetails' }
-    & Pick<UserDetails, 'id' | 'creationDate' | 'lastModifiedDate' | 'role'>
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'creationDate' | 'lastModifiedDate' | 'email' | 'role'>
   ) }
 );
 
@@ -453,8 +435,8 @@ export type UserQueryVariables = {
 export type UserQuery = (
   { __typename?: 'Query' }
   & { user: (
-    { __typename?: 'UserDetails' }
-    & Pick<UserDetails, 'id' | 'creationDate' | 'lastModifiedDate' | 'role'>
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'creationDate' | 'lastModifiedDate' | 'email' | 'role'>
   ) }
 );
 
@@ -465,7 +447,7 @@ export type UsersQuery = (
   { __typename?: 'Query' }
   & { users: Array<Maybe<(
     { __typename?: 'User' }
-    & Pick<User, 'id' | 'creationDate' | 'lastModifiedDate'>
+    & Pick<User, 'id' | 'creationDate' | 'lastModifiedDate' | 'email' | 'role'>
   )>> }
 );
 
@@ -666,38 +648,6 @@ export const DeletePostDocument = gql`
     mutation deletePost($id: ID!) {
   deletePost(id: $id) {
     id
-    name
-    start
-    finish
-    discription
-    sumbnail
-    images
-    visitors {
-      visitorName
-      discription
-      sumbnail
-    }
-    orner {
-      id
-      email
-      discription
-      icon
-      images
-      address
-      location {
-        xIndex
-        yIndex
-      }
-    }
-    address
-    location {
-      xIndex
-      yIndex
-    }
-    target {
-      ageGroup
-      gender
-    }
   }
 }
     `;
@@ -813,6 +763,7 @@ export const MyInfoDocument = gql`
     id
     creationDate
     lastModifiedDate
+    email
     role
   }
 }
@@ -1064,6 +1015,7 @@ export const UserDocument = gql`
     id
     creationDate
     lastModifiedDate
+    email
     role
   }
 }
@@ -1100,6 +1052,8 @@ export const UsersDocument = gql`
     id
     creationDate
     lastModifiedDate
+    email
+    role
   }
 }
     `;
