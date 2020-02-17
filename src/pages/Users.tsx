@@ -200,7 +200,9 @@ const Users: React.FC = () => {
             color="primary"
             onClick={onRequestCreateUser}
             disabled={
-              newUserEmail.match(/.+@.+\..+/) === null || newUserPwd.length < 8
+              newUserEmail.match(/.+@.+\..+/) === null ||
+              newUserPwd.length < 8 ||
+              data?.users.findIndex(user => user?.email === newUserEmail) !== -1
             }
           >
             作成
