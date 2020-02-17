@@ -9,7 +9,6 @@ import CardContent from "@material-ui/core/CardContent";
 import CardActions from "@material-ui/core/CardActions";
 import InputLabel from "@material-ui/core/InputLabel";
 import TextField from "@material-ui/core/TextField";
-import { useSnackbar } from "notistack";
 import Title from "./Title";
 import { signIn, newPasswordChallenge } from "../common/auth";
 
@@ -44,7 +43,6 @@ const LoginProvider: React.FC = props => {
   const [userName, setUserName] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const classes = useStyle();
-  const { enqueueSnackbar } = useSnackbar();
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,9 +66,6 @@ const LoginProvider: React.FC = props => {
     } catch (error) {
       // eslint-disable-next-line no-console
       console.log(error);
-      enqueueSnackbar(JSON.stringify(error), {
-        variant: "error"
-      });
     }
   };
 
