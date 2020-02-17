@@ -199,7 +199,9 @@ const Users: React.FC = () => {
             type="submit"
             color="primary"
             onClick={onRequestCreateUser}
-            disabled={newUserEmail.match(/.+@.+\..+/) === null || !newUserPwd}
+            disabled={
+              newUserEmail.match(/.+@.+\..+/) === null || newUserPwd.length < 8
+            }
           >
             作成
           </Button>
