@@ -199,7 +199,7 @@ const Users: React.FC = () => {
             type="submit"
             color="primary"
             onClick={onRequestCreateUser}
-            disabled={!newUserEmail || !newUserPwd}
+            disabled={newUserEmail.match(/.+@.+\..+/) === null || !newUserPwd}
           >
             作成
           </Button>
