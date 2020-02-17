@@ -44,7 +44,8 @@ const useStyle = makeStyles((theme: Theme) => ({
     margin: `${theme.spacing(2)}px 0`
   },
   textField: {
-    width: "100%"
+    width: "100%",
+    minWidth: "300px"
   }
 }));
 
