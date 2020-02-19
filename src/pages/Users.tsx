@@ -18,7 +18,14 @@ import TextField from "@material-ui/core/TextField";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
-import { useUsersQuery, Roles } from "../gen/graphql-client-api";
+import { useSnackbar } from "notistack";
+import {
+  useUsersQuery,
+  Roles,
+  useUpdateUserMutation,
+  useAddUserMutation,
+  useDeleteUserMutation
+} from "../gen/graphql-client-api";
 
 const useStyle = makeStyles((theme: Theme) => ({
   wrap: {
@@ -49,21 +56,164 @@ const useStyle = makeStyles((theme: Theme) => ({
   }
 }));
 
+interface UserInfoProps {
+  id: string;
+  email: string;
+  role: Roles;
+  creationDate: Date;
+  lastModifiedDate: Date | null;
+  handleSuccessUpdateUser: () => void;
+  handleFailureUpdateUser: (error: any) => void;
+  handleSuccessDeleteUser: () => void;
+  handleFailureDeleteUser: (error: any) => void;
+}
+
+const UserInfo: React.FC<UserInfoProps> = props => {
+  const usersQuery = useUsersQuery();
+  const [isEditting, setIsEditting] = useState<boolean>(false);
+  const [newEmail, setNewEmail] = useState<string>(props.email);
+  const [selectedRole, setSelectedRole] = useState<Roles>(props.role);
+  const [updateUserMutation] = useUpdateUserMutation();
+  const [deleteUserMutation] = useDeleteUserMutation();
+  const classes = useStyle();
+
+  const onRequestChange = async () => {
+    await updateUserMutation({
+      variables: {
+        id: props.id,
+        email: newEmail,
+        role: selectedRole
+      }
+    }).catch(err => {
+      props.handleFailureUpdateUser(err);
+    });
+    await usersQuery.refetch();
+    props.handleSuccessUpdateUser();
+    setIsEditting(false);
+  };
+
+  const onRequestDelete = async () => {
+    await deleteUserMutation({
+      variables: {
+        id: props.id
+      }
+    }).catch(err => {
+      props.handleFailureDeleteUser(err);
+    });
+    await usersQuery.refetch();
+    props.handleSuccessDeleteUser();
+    setIsEditting(false);
+  };
+
+  return (
+    <Card className={classes.card}>
+      <CardContent>
+        <div className={classes.attributeWrap}>
+          <Typography className={classes.title} color="textSecondary">
+            id
+          </Typography>
+          <Typography>{props.id}</Typography>
+        </div>
+        <div className={classes.attributeWrap}>
+          <Typography className={classes.title} color="textSecondary">
+            email
+          </Typography>
+          {!isEditting ? (
+            <Typography>{props.email}</Typography>
+          ) : (
+            <TextField
+              value={newEmail}
+              onChange={e => setNewEmail(e.target.value)}
+            />
+          )}
+        </div>
+        <div className={classes.attributeWrap}>
+          <Typography className={classes.title} color="textSecondary">
+            ユーザー種
+          </Typography>
+          {!isEditting ? (
+            <Typography>{props.role}</Typography>
+          ) : (
+            <Select
+              value={selectedRole}
+              onChange={e => setSelectedRole(e.target.value as Roles)}
+            >
+              <MenuItem value={Roles.User}>{Roles.User}</MenuItem>
+              <MenuItem value={Roles.Admin}>{Roles.Admin}</MenuItem>
+            </Select>
+          )}
+        </div>
+        <div className={classes.attributeWrap}>
+          <Typography className={classes.title} color="textSecondary">
+            アカウント作成日
+          </Typography>
+          <Typography>{props.creationDate.toUTCString()}</Typography>
+        </div>
+        {props.lastModifiedDate && (
+          <div className={classes.attributeWrap}>
+            <Typography className={classes.title} color="textSecondary">
+              最終情報変更日
+            </Typography>
+            <Typography>{props.lastModifiedDate.toUTCString()}</Typography>
+          </div>
+        )}
+      </CardContent>
+      <CardActions>
+        {!isEditting ? (
+          <Button onClick={() => setIsEditting(true)}>編集</Button>
+        ) : (
+          <>
+            <Button onClick={() => setIsEditting(false)}>キャンセル</Button>
+            <Button
+              onClick={() => onRequestChange()}
+              disabled={newEmail.match(/.+@.+\..+/) === null}
+            >
+              送信
+            </Button>
+            <Button onClick={() => onRequestDelete()} color="secondary">
+              ユーザーを削除
+            </Button>
+          </>
+        )}
+      </CardActions>
+    </Card>
+  );
+};
+
 const Users: React.FC = () => {
-  const { data, loading, error } = useUsersQuery();
+  const usersQuery = useUsersQuery();
   const [isOpenDialog, setIsOpenDialog] = useState<boolean>(false);
   const [newUserEmail, setNewUserEmail] = useState<string>("");
   const [newUserPwd, setNewUserPwd] = useState<string>("");
+  const [addUserMutation] = useAddUserMutation();
+  const { enqueueSnackbar } = useSnackbar();
   const classes = useStyle();
 
-  const onRequestCreateUser = () => {
+  const onRequestCreateUser = async (user: {
+    email: string;
+    password: string;
+  }) => {
+    await addUserMutation({
+      variables: {
+        email: user.email,
+        password: user.password
+      }
+    }).catch(err => {
+      enqueueSnackbar(JSON.stringify(err), {
+        variant: "error"
+      });
+    });
     setIsOpenDialog(false);
+    usersQuery.refetch();
+    enqueueSnackbar("ユーザーを作成しました。", {
+      variant: "success"
+    });
   };
 
   return (
     <>
       <div className={classes.wrap}>
-        {loading &&
+        {usersQuery.loading &&
           [...Array(3)].map((value, index) => (
             <Card className={classes.card} key={index}>
               <CardContent>
@@ -103,52 +253,36 @@ const Users: React.FC = () => {
               </CardActions>
             </Card>
           ))}
-        {!loading &&
-          !error &&
-          data?.users.map(user => (
-            <Card className={classes.card}>
-              <CardContent>
-                <div className={classes.attributeWrap}>
-                  <Typography className={classes.title} color="textSecondary">
-                    id
-                  </Typography>
-                  <Typography>{user!.id}</Typography>
-                </div>
-                <div className={classes.attributeWrap}>
-                  <Typography className={classes.title} color="textSecondary">
-                    email
-                  </Typography>
-                  <Typography>{user!.email}</Typography>
-                </div>
-                <div className={classes.attributeWrap}>
-                  <Typography className={classes.title} color="textSecondary">
-                    ユーザー種
-                  </Typography>
-                  <Typography>{user!.role}</Typography>
-                </div>
-                <div className={classes.attributeWrap}>
-                  <Typography className={classes.title} color="textSecondary">
-                    アカウント作成日
-                  </Typography>
-                  <Typography>
-                    {new Date(user!.creationDate).toUTCString()}
-                  </Typography>
-                </div>
-                {user!.lastModifiedDate && (
-                  <div className={classes.attributeWrap}>
-                    <Typography className={classes.title} color="textSecondary">
-                      最終情報変更日
-                    </Typography>
-                    <Typography>
-                      {new Date(user!.lastModifiedDate).toUTCString()}
-                    </Typography>
-                  </div>
-                )}
-              </CardContent>
-              <CardActions>
-                <Button>編集</Button>
-              </CardActions>
-            </Card>
+        {!usersQuery.loading &&
+          !usersQuery.error &&
+          usersQuery.data?.users.map(user => (
+            <UserInfo
+              id={user?.id!}
+              email={user?.email!}
+              role={user?.role!}
+              creationDate={new Date(user?.creationDate)}
+              lastModifiedDate={new Date(user?.lastModifiedDate)}
+              handleSuccessUpdateUser={() => {
+                enqueueSnackbar("ユーザー情報を変更しました。", {
+                  variant: "success"
+                });
+              }}
+              handleFailureUpdateUser={err => {
+                enqueueSnackbar(JSON.stringify(err), {
+                  variant: "error"
+                });
+              }}
+              handleSuccessDeleteUser={() => {
+                enqueueSnackbar("ユーザーを削除しました。", {
+                  variant: "default"
+                });
+              }}
+              handleFailureDeleteUser={err => {
+                enqueueSnackbar(JSON.stringify(err), {
+                  variant: "error"
+                });
+              }}
+            />
           ))}
       </div>
       <Fab
@@ -196,13 +330,19 @@ const Users: React.FC = () => {
         </DialogContent>
         <DialogActions>
           <Button
-            type="submit"
+            type="button"
             color="primary"
-            onClick={onRequestCreateUser}
+            onClick={() =>
+              onRequestCreateUser({
+                email: newUserEmail,
+                password: newUserPwd
+              })}
             disabled={
               newUserEmail.match(/.+@.+\..+/) === null ||
               newUserPwd.length < 8 ||
-              data?.users.findIndex(user => user?.email === newUserEmail) !== -1
+              usersQuery.data?.users.findIndex(
+                user => user?.email === newUserEmail
+              ) !== -1
             }
           >
             作成

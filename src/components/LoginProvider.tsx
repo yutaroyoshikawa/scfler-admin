@@ -9,6 +9,7 @@ import CardContent from "@material-ui/core/CardContent";
 import CardActions from "@material-ui/core/CardActions";
 import InputLabel from "@material-ui/core/InputLabel";
 import TextField from "@material-ui/core/TextField";
+import { useSnackbar } from "notistack";
 import Title from "./Title";
 import { signIn, newPasswordChallenge } from "../common/auth";
 
@@ -42,30 +43,34 @@ const LoginProvider: React.FC = props => {
   const { data, client } = useQuery(GET_LOGIN_STATE);
   const [userName, setUserName] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const { enqueueSnackbar } = useSnackbar();
   const classes = useStyle();
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      const { newPasswordRequired } = await signIn(userName, password);
-      if (newPasswordRequired) {
-        await newPasswordChallenge(password);
-        client.writeData({
-          data: {
-            isLoggedIn: true
-          }
+    const newPasswordRequired = await signIn(userName, password).catch(err => {
+      enqueueSnackbar(JSON.stringify(err), {
+        variant: "error"
+      });
+    });
+    if (newPasswordRequired) {
+      await newPasswordChallenge(password).catch(err => {
+        enqueueSnackbar(JSON.stringify(err), {
+          variant: "error"
         });
-      }
-      if (!newPasswordRequired) {
-        client.writeData({
-          data: {
-            isLoggedIn: true
-          }
-        });
-      }
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.log(error);
+      });
+      client.writeData({
+        data: {
+          isLoggedIn: true
+        }
+      });
+    }
+    if (!newPasswordRequired) {
+      client.writeData({
+        data: {
+          isLoggedIn: false
+        }
+      });
     }
   };
 
