@@ -1,15 +1,18 @@
 {
   "plugins": [
+    "react-app",
+    "react",
     "prettier",
-    "@typescript-eslint",
-    "react-app"
+    "@typescript-eslint"
   ],
   "extends": [
-    "plugin:prettier/recommended",
     "airbnb",
+    "eslint:recommended",
+    "plugin:react/recommended",
     "plugin:@typescript-eslint/recommended",
-    "prettier/@typescript-eslint",
+    "plugin:prettier/recommended",
     "prettier",
+    "prettier/@typescript-eslint",
     "prettier/flowtype"
   ],
   "env": {
@@ -42,6 +45,7 @@
     "react/prop-types": 0,
     "import/no-extraneous-dependencies": 0,
     "react/jsx-boolean-value": 0,
-    "react/no-array-index-key": 1
+    "react/no-array-index-key": 1,
+    "react/jsx-curly-newline": 0
   }
 }
