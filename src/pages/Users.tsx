@@ -345,7 +345,8 @@ const Users: React.FC = () => {
               onRequestCreateUser({
                 email: newUserEmail,
                 password: newUserPwd
-              })}
+              })
+            }
             disabled={
               newUserEmail.match(/.+@.+\..+/) === null ||
               newUserPwd.length < 8 ||
