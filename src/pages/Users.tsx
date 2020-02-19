@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import CardActions from "@material-ui/core/CardActions";
@@ -209,6 +209,15 @@ const Users: React.FC = () => {
       variant: "success"
     });
   };
+
+  useMemo(() => {
+    if (usersQuery.error) {
+      enqueueSnackbar(JSON.stringify(usersQuery.error), {
+        variant: "error"
+      });
+    }
+    // eslint-disable-next-line
+  }, [usersQuery.error]);
 
   return (
     <>
