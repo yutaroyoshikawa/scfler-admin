@@ -21,6 +21,7 @@ import Users from "./pages/Users";
 import Orners from "./pages/Orners";
 import Posts from "./pages/Posts";
 import Home from "./pages/Home";
+import { Roles } from "./gen/graphql-client-api";
 
 interface PageItem {
   url: string;
@@ -105,7 +106,9 @@ cache.writeData({
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       `CognitoIdentityServiceProvider.${process.env
         .REACT_APP_COGNITO_CLIENT_ID!}.${lastLogin}.accessToken`
-    )
+    ),
+    loggedInId: "",
+    loggedInRole: "user" as Roles
   }
 });
 
