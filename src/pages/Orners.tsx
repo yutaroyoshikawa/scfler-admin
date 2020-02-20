@@ -27,7 +27,9 @@ import {
   useAddOrnerMutation,
   AddOrnerMutationVariables,
   useDeleteOrnerMutation,
-  DeleteOrnerMutationVariables
+  Orner,
+  useUpdateOrnerMutation,
+  GeolocationInput
 } from "../gen/graphql-client-api";
 
 const useStyle = makeStyles((theme: Theme) => ({
@@ -83,11 +85,317 @@ interface UploadFile {
   fileType: string;
 }
 
+interface OrnerInfoProps extends Orner {
+  handleSuccessUpdateUser: () => void;
+  handleFailureUpdateUser: (error: any) => void;
+  handleSuccessDeleteUser: () => void;
+  handleFailureDeleteUser: (error: any) => void;
+}
+
+const OrnerInfo: React.FC<OrnerInfoProps> = props => {
+  const classes = useStyle();
+  const ornersQuery = useOrnersQuery();
+  const [deleteOrnerMutation] = useDeleteOrnerMutation();
+  const [updateOrnerMutation] = useUpdateOrnerMutation();
+  const [isEditting, setIsEditting] = useState<boolean>(false);
+  const [newOrnerName, setNewOrnerName] = useState<string>(props.name);
+  const [newOrnerEmail, setNewOrnerEmail] = useState<string>(props.email);
+  const [newOrnerIcon, setNewOrnerIcon] = useState<UploadFile>({
+    objectUrl: "",
+    fileType: ""
+  });
+  const [newOrnerImages, setNewOrnerImages] = useState<UploadFile[]>([]);
+  const [newOrnerDiscription, setNewOrnerDiscription] = useState<string>(
+    props.discription!
+  );
+  const [newOrnerAddress, setNewOrnerAddress] = useState<string>(
+    props.address!
+  );
+  const [newOrnerLocation, setNewOrnerLocation] = useState<GeolocationInput>(
+    props.location!
+  );
+
+  const onRequestDeleteOrner = async (id: string) => {
+    await deleteOrnerMutation({
+      variables: {
+        id: props.id
+      }
+    }).catch(err => {
+      props.handleFailureDeleteUser(err);
+    });
+
+    await ornersQuery.refetch();
+    setIsEditting(false);
+  };
+
+  const onRequestUpdateOrner = async () => {
+    const uploadImage = async (file: File) => {
+      const url = `${nanoid()}${file.type}`;
+
+      await s3
+        .putObject({
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          Bucket: process.env.REACT_APP_S3_BUCKET_NAME!,
+          Key: url,
+          Body: file,
+          ACL: "public-read"
+        })
+        .promise()
+        .catch(err => {
+          props.handleFailureUpdateUser(err);
+        });
+
+      return url;
+    };
+
+    const iconFile = await fetch(newOrnerIcon.objectUrl)
+      .then(response => response.blob())
+      .then(blob => new File([blob], `${nanoid()}${newOrnerIcon.fileType}`));
+    const iconUrl = await uploadImage(iconFile);
+
+    const ornerImages: string[] = [];
+
+    await Promise.all(
+      newOrnerImages.map(async image => {
+        try {
+          const imageFile = await fetch(image.objectUrl)
+            .then(response => response.blob())
+            .then(blob => new File([blob], `${nanoid()}${image.fileType}`));
+          const imageUrl = await uploadImage(imageFile).catch(err => {
+            props.handleFailureUpdateUser(err);
+          });
+
+          ornerImages.push(imageUrl as string);
+        } catch (err) {
+          props.handleFailureUpdateUser(err);
+        }
+      })
+    );
+
+    await updateOrnerMutation({
+      variables: {
+        id: props.id,
+        email: newOrnerEmail,
+        name: newOrnerName,
+        discription: newOrnerDiscription,
+        icon: iconUrl,
+        images: ornerImages,
+        address: newOrnerAddress,
+        location: newOrnerLocation
+      }
+    }).catch(err => {
+      return props.handleFailureUpdateUser(err);
+    });
+
+    await ornersQuery.refetch();
+    setIsEditting(false);
+  };
+
+  return (
+    <Card key={props.id} className={classes.card}>
+      <CardContent>
+        <div className={classes.attributeWrap}>
+          <Typography className={classes.title} color="textSecondary">
+            オーナーID
+          </Typography>
+          <Typography>{props.id}</Typography>
+        </div>
+        <div className={classes.attributeWrap}>
+          <Typography className={classes.title} color="textSecondary">
+            オーナー名
+          </Typography>
+          {isEditting ? (
+            <TextField
+              value={newOrnerName}
+              onChange={e => setNewOrnerName(e.target.value)}
+            />
+          ) : (
+            <Typography>{props.name}</Typography>
+          )}
+        </div>
+        <div className={classes.attributeWrap}>
+          <Typography className={classes.title} color="textSecondary">
+            連絡先Email
+          </Typography>
+          {isEditting ? (
+            <TextField
+              value={newOrnerEmail}
+              onChange={e => setNewOrnerEmail(e.target.value)}
+            />
+          ) : (
+            <Typography>{props.email}</Typography>
+          )}
+        </div>
+        <div className={classes.attributeWrap}>
+          <Typography className={classes.title} color="textSecondary">
+            アイコン画像
+          </Typography>
+          {isEditting && (
+            <div className={classes.attributeWrap}>
+              <Button
+                variant="contained"
+                color="primary"
+                className={classes.textField}
+              >
+                画像を選択
+                <input
+                  type="file"
+                  className={classes.fileInput}
+                  onChange={e =>
+                    e.target.files &&
+                    setNewOrnerIcon({
+                      objectUrl: URL.createObjectURL(e.target.files[0]),
+                      fileType: e.target.files[0].type
+                    })
+                  }
+                />
+              </Button>
+            </div>
+          )}
+          <Avatar
+            src={`https://sicfler-bucket.s3-ap-northeast-1.amazonaws.com/${props.icon!}`}
+            className={classes.avatar}
+          />
+        </div>
+        <div className={classes.attributeWrap}>
+          <Typography className={classes.title} color="textSecondary">
+            オーナーサムネイル画像
+          </Typography>
+          {isEditting ? (
+            <div className={classes.textFieldWrapper}>
+              <DropzoneArea
+                showFileNamesInPreview={true}
+                showPreviewsInDropzone={true}
+                onChange={files =>
+                  files &&
+                  setNewOrnerImages(
+                    files.map(
+                      (file: any) =>
+                        ({
+                          objectUrl: URL.createObjectURL(file),
+                          fileType: file.type
+                        } as UploadFile)
+                    )
+                  )
+                }
+              />
+            </div>
+          ) : (
+            <>
+              {props.images.map(
+                image =>
+                  image && (
+                    <img
+                      src={`https://sicfler-bucket.s3-ap-northeast-1.amazonaws.com/${image}`}
+                      alt="orner images"
+                      className={classes.ornerImage}
+                      key={image}
+                    />
+                  )
+              )}
+            </>
+          )}
+        </div>
+        <div className={classes.attributeWrap}>
+          <Typography className={classes.title} color="textSecondary">
+            自己紹介文
+          </Typography>
+          {isEditting ? (
+            <TextField
+              value={newOrnerDiscription}
+              onChange={e => setNewOrnerDiscription(e.target.value)}
+            />
+          ) : (
+            <Typography>{props.discription}</Typography>
+          )}
+        </div>
+        <div className={classes.attributeWrap}>
+          <Typography className={classes.title} color="textSecondary">
+            オーナー拠点住所
+          </Typography>
+          {isEditting ? (
+            <TextField
+              value={newOrnerAddress}
+              onChange={e => setNewOrnerAddress(e.target.value)}
+            />
+          ) : (
+            <Typography>{props.address}</Typography>
+          )}
+        </div>
+        <div className={classes.attributeWrap}>
+          <Typography className={classes.title} color="textSecondary">
+            オーナー拠点住所座標
+          </Typography>
+          {isEditting ? (
+            <TextField
+              value={newOrnerLocation.xIndex}
+              onChange={e =>
+                setNewOrnerLocation({
+                  ...newOrnerLocation,
+                  xIndex: Number(e.target.value)
+                })
+              }
+            />
+          ) : (
+            <Typography>
+              緯度：
+              {props.location?.xIndex!}
+            </Typography>
+          )}
+          {isEditting ? (
+            <TextField
+              value={newOrnerLocation.yIndex}
+              onChange={e =>
+                setNewOrnerLocation({
+                  ...newOrnerLocation,
+                  yIndex: Number(e.target.value)
+                })
+              }
+            />
+          ) : (
+            <Typography>
+              経度：
+              {props.location?.yIndex!}
+            </Typography>
+          )}
+        </div>
+      </CardContent>
+      <CardActions>
+        {isEditting ? (
+          <>
+            <Button
+              onClick={() => {
+                setIsEditting(false);
+              }}
+            >
+              キャンセル
+            </Button>
+            <Button onClick={() => onRequestUpdateOrner()}>送信</Button>
+            <Button
+              onClick={() => onRequestDeleteOrner(props.id)}
+              color="secondary"
+            >
+              ユーザーを削除
+            </Button>
+          </>
+        ) : (
+          <Button
+            onClick={() => {
+              setIsEditting(true);
+            }}
+          >
+            編集
+          </Button>
+        )}
+      </CardActions>
+    </Card>
+  );
+};
+
 const Orners: React.FC = () => {
   const classes = useStyle();
   const ornersQuery = useOrnersQuery();
   const [addOrnerMutation] = useAddOrnerMutation();
-  const [deleteOrnerMutation] = useDeleteOrnerMutation();
   const { enqueueSnackbar } = useSnackbar();
   const [isOpenDialog, setIsOpenDialog] = useState<boolean>(false);
   const [newOrnerUserId, setNewOrnerUserId] = useState<string>("");
@@ -186,23 +494,6 @@ const Orners: React.FC = () => {
     });
   };
 
-  const onRequestDeleteOrner = async (id: string) => {
-    await deleteOrnerMutation({
-      variables: {
-        id
-      } as DeleteOrnerMutationVariables
-    }).catch(err => {
-      enqueueSnackbar(JSON.stringify(err), {
-        variant: "error"
-      });
-    });
-
-    await ornersQuery.refetch();
-    enqueueSnackbar("オーナーを削除しました", {
-      variant: "default"
-    });
-  };
-
   return (
     <>
       <div className={classes.wrap}>
@@ -249,87 +540,36 @@ const Orners: React.FC = () => {
         {!ornersQuery.loading &&
           !ornersQuery.error &&
           ornersQuery.data?.orners.map(orner => (
-            <Card key={orner?.id} className={classes.card}>
-              <CardContent>
-                <div className={classes.attributeWrap}>
-                  <Typography className={classes.title} color="textSecondary">
-                    オーナーID
-                  </Typography>
-                  <Typography>{orner?.id}</Typography>
-                </div>
-                <div className={classes.attributeWrap}>
-                  <Typography className={classes.title} color="textSecondary">
-                    オーナー名
-                  </Typography>
-                  <Typography>{orner?.name}</Typography>
-                </div>
-                <div className={classes.attributeWrap}>
-                  <Typography className={classes.title} color="textSecondary">
-                    連絡先Email
-                  </Typography>
-                  <Typography>{orner?.email}</Typography>
-                </div>
-                <div className={classes.attributeWrap}>
-                  <Typography className={classes.title} color="textSecondary">
-                    アイコン画像
-                  </Typography>
-                  <Avatar
-                    src={`https://sicfler-bucket.s3-ap-northeast-1.amazonaws.com/${orner?.icon!}`}
-                    className={classes.avatar}
-                  />
-                </div>
-                <div className={classes.attributeWrap}>
-                  <Typography className={classes.title} color="textSecondary">
-                    オーナーサムネイル画像
-                  </Typography>
-                  {orner?.images.map(
-                    image =>
-                      image && (
-                        <img
-                          src={`https://sicfler-bucket.s3-ap-northeast-1.amazonaws.com/${image}`}
-                          alt="orner images"
-                          className={classes.ornerImage}
-                          key={image}
-                        />
-                      )
-                  )}
-                </div>
-                <div className={classes.attributeWrap}>
-                  <Typography className={classes.title} color="textSecondary">
-                    自己紹介文
-                  </Typography>
-                  <Typography>{orner?.discription}</Typography>
-                </div>
-                <div className={classes.attributeWrap}>
-                  <Typography className={classes.title} color="textSecondary">
-                    オーナー拠点住所
-                  </Typography>
-                  <Typography>{orner?.address}</Typography>
-                </div>
-                <div className={classes.attributeWrap}>
-                  <Typography className={classes.title} color="textSecondary">
-                    オーナー拠点住所座標
-                  </Typography>
-                  <Typography>
-                    緯度：
-                    {orner?.location?.xIndex!}
-                  </Typography>
-                  <Typography>
-                    経度：
-                    {orner?.location?.yIndex!}
-                  </Typography>
-                </div>
-              </CardContent>
-              <CardActions>
-                <Button
-                  onClick={async () => {
-                    await onRequestDeleteOrner(orner?.id!);
-                  }}
-                >
-                  削除
-                </Button>
-              </CardActions>
-            </Card>
+            <OrnerInfo
+              id={orner?.id!}
+              name={orner?.name!}
+              email={orner?.email!}
+              icon={orner?.icon!}
+              discription={orner?.discription!}
+              images={orner?.images!}
+              address={orner?.address!}
+              location={orner?.location!}
+              handleFailureDeleteUser={err => {
+                enqueueSnackbar(JSON.stringify(err), {
+                  variant: "error"
+                });
+              }}
+              handleFailureUpdateUser={err => {
+                enqueueSnackbar(JSON.stringify(err), {
+                  variant: "error"
+                });
+              }}
+              handleSuccessDeleteUser={() => {
+                enqueueSnackbar("オーナーを削除しました。", {
+                  variant: "default"
+                });
+              }}
+              handleSuccessUpdateUser={() => {
+                enqueueSnackbar("オーナー情報を変更しました。", {
+                  variant: "success"
+                });
+              }}
+            />
           ))}
       </div>
       <Fab
