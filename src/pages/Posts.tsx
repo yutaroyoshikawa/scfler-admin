@@ -25,13 +25,17 @@ import Title from "../components/Title";
 import {
   Roles,
   usePostsQuery,
-  Geolocation,
   useAddPostMutation
 } from "../gen/graphql-client-api";
 
 interface UploadFile {
   objectUrl: string;
   fileType: string;
+}
+
+interface Location {
+  xIndex: number;
+  yIndex: number;
 }
 
 const useStyle = makeStyles((theme: Theme) => ({
@@ -99,7 +103,7 @@ const Posts: React.FC = () => {
   const [newPostFinish, setNewPostFinish] = useState<Date>(new Date());
   const [newPostDiscription, setNewPostDiscription] = useState<string>("");
   const [newPostAddress, setNewPostAddress] = useState<string>("");
-  const [newPostLocation, setNewPostLocation] = useState<Geolocation>({
+  const [newPostLocation, setNewPostLocation] = useState<Location>({
     xIndex: 0,
     yIndex: 0
   });
@@ -205,6 +209,9 @@ const Posts: React.FC = () => {
       });
     });
 
+    await postsQuery.refetch({
+      ornerId: loginState.data.loggedInId
+    });
     setIsOpenDialog(false);
     enqueueSnackbar("投稿を作成しました。", {
       variant: "success"
@@ -300,7 +307,7 @@ const Posts: React.FC = () => {
               開始時間
               <TextField
                 className={classes.textField}
-                value={newPostStart.toUTCString()}
+                // value={newPostStart.toUTCString()}
                 type="datetime-local"
                 onChange={e => setNewPostStart(new Date(e.target.value))}
               />
@@ -311,7 +318,7 @@ const Posts: React.FC = () => {
               終了時間
               <TextField
                 className={classes.textField}
-                value={newPostFinish.toUTCString()}
+                // value={newPostFinish.toUTCString()}
                 type="datetime-local"
                 defaultValue={newPostFinish.toUTCString()}
                 onChange={e => setNewPostFinish(new Date(e.target.value))}
@@ -325,16 +332,6 @@ const Posts: React.FC = () => {
                 className={classes.textField}
                 value={newPostDiscription}
                 onChange={e => setNewPostDiscription(e.target.value)}
-              />
-            </InputLabel>
-          </div>
-          <div className={classes.textFieldWrapper}>
-            <InputLabel>
-              イベント名
-              <TextField
-                className={classes.textField}
-                value={newPostName}
-                onChange={e => setNewPostName(e.target.value)}
               />
             </InputLabel>
           </div>
