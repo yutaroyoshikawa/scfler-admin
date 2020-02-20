@@ -65,6 +65,11 @@ const useStyle = makeStyles((theme: Theme) => ({
   avatar: {
     width: "100px",
     height: "100px"
+  },
+  ornerImage: {
+    width: "200px",
+    height: "160px",
+    objectFit: "cover"
   }
 }));
 
@@ -201,7 +206,6 @@ const Orners: React.FC = () => {
   return (
     <>
       <div className={classes.wrap}>
-        {JSON.stringify(newOrnerImages)}
         {ornersQuery.loading &&
           [...Array(3)].map((value, index) => (
             <Card className={classes.card} key={index}>
@@ -245,18 +249,76 @@ const Orners: React.FC = () => {
         {!ornersQuery.loading &&
           !ornersQuery.error &&
           ornersQuery.data?.orners.map(orner => (
-            <Card key={orner?.id}>
+            <Card key={orner?.id} className={classes.card}>
               <CardContent>
-                <Typography>{orner?.id}</Typography>
-                <Typography>{orner?.name}</Typography>
-                <Typography>{orner?.email}</Typography>
-                <Typography>{orner?.address}</Typography>
-                <Avatar
-                  src={`https://sicfler-bucket.s3-ap-northeast-1.amazonaws.com/${orner?.icon!}`}
-                />
-                <Typography>{orner?.images.toString()}</Typography>
-                <Typography>{orner?.discription}</Typography>
-                <Typography>{JSON.stringify(orner?.location)}</Typography>
+                <div className={classes.attributeWrap}>
+                  <Typography className={classes.title} color="textSecondary">
+                    オーナーID
+                  </Typography>
+                  <Typography>{orner?.id}</Typography>
+                </div>
+                <div className={classes.attributeWrap}>
+                  <Typography className={classes.title} color="textSecondary">
+                    オーナー名
+                  </Typography>
+                  <Typography>{orner?.name}</Typography>
+                </div>
+                <div className={classes.attributeWrap}>
+                  <Typography className={classes.title} color="textSecondary">
+                    連絡先Email
+                  </Typography>
+                  <Typography>{orner?.email}</Typography>
+                </div>
+                <div className={classes.attributeWrap}>
+                  <Typography className={classes.title} color="textSecondary">
+                    アイコン画像
+                  </Typography>
+                  <Avatar
+                    src={`https://sicfler-bucket.s3-ap-northeast-1.amazonaws.com/${orner?.icon!}`}
+                    className={classes.avatar}
+                  />
+                </div>
+                <div className={classes.attributeWrap}>
+                  <Typography className={classes.title} color="textSecondary">
+                    オーナーサムネイル画像
+                  </Typography>
+                  {orner?.images.map(
+                    image =>
+                      image && (
+                        <img
+                          src={`https://sicfler-bucket.s3-ap-northeast-1.amazonaws.com/${image}`}
+                          alt="orner images"
+                          className={classes.ornerImage}
+                          key={image}
+                        />
+                      )
+                  )}
+                </div>
+                <div className={classes.attributeWrap}>
+                  <Typography className={classes.title} color="textSecondary">
+                    自己紹介文
+                  </Typography>
+                  <Typography>{orner?.discription}</Typography>
+                </div>
+                <div className={classes.attributeWrap}>
+                  <Typography className={classes.title} color="textSecondary">
+                    オーナー拠点住所
+                  </Typography>
+                  <Typography>{orner?.address}</Typography>
+                </div>
+                <div className={classes.attributeWrap}>
+                  <Typography className={classes.title} color="textSecondary">
+                    オーナー拠点住所座標
+                  </Typography>
+                  <Typography>
+                    緯度：
+                    {orner?.location?.xIndex!}
+                  </Typography>
+                  <Typography>
+                    経度：
+                    {orner?.location?.yIndex!}
+                  </Typography>
+                </div>
               </CardContent>
               <CardActions>
                 <Button
