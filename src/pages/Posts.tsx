@@ -19,8 +19,15 @@ import InputLabel from "@material-ui/core/InputLabel";
 import AddIcon from "@material-ui/icons/Add";
 import { useSnackbar } from "notistack";
 import { DropzoneArea } from "material-ui-dropzone";
+import nanoid from "nanoid";
+import { s3 } from "../common/aws";
 import Title from "../components/Title";
-import { Roles, usePostsQuery, Geolocation } from "../gen/graphql-client-api";
+import {
+  Roles,
+  usePostsQuery,
+  Geolocation,
+  useAddPostMutation
+} from "../gen/graphql-client-api";
 
 interface UploadFile {
   objectUrl: string;
@@ -81,12 +88,16 @@ const GET_LOGIN_STATE = gql`
 const Posts: React.FC = () => {
   const classes = useStyle();
   const loginState = useQuery(GET_LOGIN_STATE);
+  const [addPostMutation] = useAddPostMutation();
   const [isSkipFetch, setIsSkipFetch] = useState<boolean>(true);
   const postsQuery = usePostsQuery({
     skip: isSkipFetch
   });
   const [isOpenDialog, setIsOpenDialog] = useState<boolean>(false);
   const [newPostName, setNewPostName] = useState<string>("");
+  const [newPostStart, setNewPostStart] = useState<Date>(new Date());
+  const [newPostFinish, setNewPostFinish] = useState<Date>(new Date());
+  const [newPostDiscription, setNewPostDiscription] = useState<string>("");
   const [newPostAddress, setNewPostAddress] = useState<string>("");
   const [newPostLocation, setNewPostLocation] = useState<Geolocation>({
     xIndex: 0,
@@ -96,7 +107,7 @@ const Posts: React.FC = () => {
     objectUrl: "",
     fileType: ""
   });
-  const [, setNewPostImages] = useState<UploadFile[]>([]);
+  const [newPostImages, setNewPostImages] = useState<UploadFile[]>([]);
   const [newPostTargetAgeGroup, setNewPostTargetAgeGroup] = useState<number>(
     20
   );
@@ -122,7 +133,78 @@ const Posts: React.FC = () => {
     // eslint-disable-next-line
   }, [loginState.data.loggedInId]);
 
-  const onRequestAddPost = () => {
+  const onRequestAddPost = async () => {
+    const uploadImage = async (file: File) => {
+      const url = `${nanoid()}${file.type}`;
+
+      await s3
+        .putObject({
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          Bucket: process.env.REACT_APP_S3_BUCKET_NAME!,
+          Key: url,
+          Body: file,
+          ACL: "public-read"
+        })
+        .promise()
+        .catch(err => {
+          enqueueSnackbar(JSON.stringify(err), {
+            variant: "error"
+          });
+        });
+
+      return url;
+    };
+
+    const sumbnailFile = await fetch(newPostSumbnail.objectUrl)
+      .then(response => response.blob())
+      .then(blob => new File([blob], `${nanoid()}${newPostSumbnail.fileType}`));
+    const sumbnailUrl = await uploadImage(sumbnailFile);
+
+    const postImages: string[] = [];
+
+    await Promise.all(
+      newPostImages.map(async image => {
+        try {
+          const imageFile = await fetch(image.objectUrl)
+            .then(response => response.blob())
+            .then(blob => new File([blob], `${nanoid()}${image.fileType}`));
+          const imageUrl = await uploadImage(imageFile).catch(err => {
+            enqueueSnackbar(JSON.stringify(err), {
+              variant: "error"
+            });
+          });
+
+          postImages.push(imageUrl as string);
+        } catch (err) {
+          enqueueSnackbar(JSON.stringify(err), {
+            variant: "error"
+          });
+        }
+      })
+    );
+
+    await addPostMutation({
+      variables: {
+        name: newPostName,
+        start: newPostStart,
+        finish: newPostFinish,
+        discription: newPostDiscription,
+        sumbnail: sumbnailUrl,
+        images: postImages,
+        ornerId: loginState.data.loggedInId,
+        address: newPostAddress,
+        location: newPostLocation,
+        target: {
+          ageGroup: newPostTargetAgeGroup,
+          gender: newPostTargetGender
+        }
+      }
+    }).catch(err => {
+      enqueueSnackbar(JSON.stringify(err), {
+        variant: "error"
+      });
+    });
+
     setIsOpenDialog(false);
     enqueueSnackbar("投稿を作成しました。", {
       variant: "success"
@@ -218,8 +300,9 @@ const Posts: React.FC = () => {
               開始時間
               <TextField
                 className={classes.textField}
-                value={newPostName}
-                onChange={e => setNewPostName(e.target.value)}
+                value={newPostStart.toUTCString()}
+                type="datetime-local"
+                onChange={e => setNewPostStart(new Date(e.target.value))}
               />
             </InputLabel>
           </div>
@@ -228,8 +311,10 @@ const Posts: React.FC = () => {
               終了時間
               <TextField
                 className={classes.textField}
-                value={newPostName}
-                onChange={e => setNewPostName(e.target.value)}
+                value={newPostFinish.toUTCString()}
+                type="datetime-local"
+                defaultValue={newPostFinish.toUTCString()}
+                onChange={e => setNewPostFinish(new Date(e.target.value))}
               />
             </InputLabel>
           </div>
@@ -238,8 +323,8 @@ const Posts: React.FC = () => {
               説明
               <TextField
                 className={classes.textField}
-                value={newPostName}
-                onChange={e => setNewPostName(e.target.value)}
+                value={newPostDiscription}
+                onChange={e => setNewPostDiscription(e.target.value)}
               />
             </InputLabel>
           </div>
