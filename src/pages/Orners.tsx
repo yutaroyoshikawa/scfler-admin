@@ -15,10 +15,20 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
 import TextField from "@material-ui/core/TextField";
 import InputLabel from "@material-ui/core/InputLabel";
+import Avatar from "@material-ui/core/Avatar";
 // import Select from "@material-ui/core/Select";
 // import MenuItem from "@material-ui/core/MenuItem";
+import { DropzoneArea } from "material-ui-dropzone";
 import { useSnackbar } from "notistack";
-import { useOrnersQuery } from "../gen/graphql-client-api";
+import nanoid from "nanoid";
+import { s3 } from "../common/aws";
+import {
+  useOrnersQuery,
+  useAddOrnerMutation,
+  AddOrnerMutationVariables,
+  useDeleteOrnerMutation,
+  DeleteOrnerMutationVariables
+} from "../gen/graphql-client-api";
 
 const useStyle = makeStyles((theme: Theme) => ({
   wrap: {
@@ -46,14 +56,49 @@ const useStyle = makeStyles((theme: Theme) => ({
   textField: {
     width: "100%",
     minWidth: "300px"
+  },
+  fileInput: {
+    opacity: 0,
+    appearance: "none",
+    position: "absolute"
+  },
+  avatar: {
+    width: "100px",
+    height: "100px"
   }
 }));
+
+interface Location {
+  xIndex: number;
+  yIndex: number;
+}
+
+interface UploadFile {
+  objectUrl: string;
+  fileType: string;
+}
 
 const Orners: React.FC = () => {
   const classes = useStyle();
   const ornersQuery = useOrnersQuery();
+  const [addOrnerMutation] = useAddOrnerMutation();
+  const [deleteOrnerMutation] = useDeleteOrnerMutation();
   const { enqueueSnackbar } = useSnackbar();
   const [isOpenDialog, setIsOpenDialog] = useState<boolean>(false);
+  const [newOrnerUserId, setNewOrnerUserId] = useState<string>("");
+  const [newOrnerEmail, setNewOrnerEmail] = useState<string>("");
+  const [newOrnerName, setNewOrnerName] = useState<string>("");
+  const [newOrnerDetail, setNewOrnerDetail] = useState<string>("");
+  const [newOrnerIcon, setNewOrnerIcon] = useState<UploadFile>({
+    objectUrl: "",
+    fileType: ""
+  });
+  const [newOrnerImages, setNewOrnerImages] = useState<UploadFile[]>([]);
+  const [newOrnerAdress, setNewOrnerAdress] = useState<string>("");
+  const [newOrnerLocation, setNewOrnerLocation] = useState<Location>({
+    xIndex: 0,
+    yIndex: 0
+  });
 
   useMemo(() => {
     if (ornersQuery.error) {
@@ -64,15 +109,99 @@ const Orners: React.FC = () => {
     // eslint-disable-next-line
   }, [ornersQuery.error]);
 
-  const onRequestAddOrner = () => {
+  const onRequestAddOrner = async () => {
+    const uploadImage = async (file: File) => {
+      const url = `${nanoid()}${file.type}`;
+
+      await s3
+        .putObject({
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          Bucket: process.env.REACT_APP_S3_BUCKET_NAME!,
+          Key: url,
+          Body: file,
+          ACL: "public-read"
+        })
+        .promise()
+        .catch(err => {
+          enqueueSnackbar(JSON.stringify(err));
+        });
+
+      return url;
+    };
+
+    const iconFile = await fetch(newOrnerIcon.objectUrl)
+      .then(response => response.blob())
+      .then(blob => new File([blob], `${nanoid()}${newOrnerIcon.fileType}`));
+    const iconUrl = await uploadImage(iconFile);
+
+    const ornerImages: string[] = [];
+
+    await Promise.all(
+      newOrnerImages.map(async image => {
+        try {
+          const imageFile = await fetch(image.objectUrl)
+            .then(response => response.blob())
+            .then(blob => new File([blob], `${nanoid()}${image.fileType}`));
+          const imageUrl = await uploadImage(imageFile).catch(err => {
+            enqueueSnackbar(JSON.stringify(err), {
+              variant: "error"
+            });
+          });
+
+          ornerImages.push(imageUrl as string);
+        } catch (err) {
+          enqueueSnackbar(JSON.stringify(err), {
+            variant: "error"
+          });
+        }
+      })
+    );
+
+    await addOrnerMutation({
+      variables: {
+        id: newOrnerUserId,
+        email: newOrnerEmail,
+        name: newOrnerName,
+        discription: newOrnerDetail,
+        icon: iconUrl,
+        images: ornerImages,
+        address: newOrnerAdress,
+        location: newOrnerLocation
+      } as AddOrnerMutationVariables
+    }).catch(err => {
+      enqueueSnackbar(JSON.stringify(err), {
+        variant: "error"
+      });
+    });
+
+    await ornersQuery.refetch();
+    setIsOpenDialog(false);
     enqueueSnackbar("オーナーを追加しました。", {
       variant: "success"
+    });
+  };
+
+  const onRequestDeleteOrner = async (id: string) => {
+    await deleteOrnerMutation({
+      variables: {
+        id
+      } as DeleteOrnerMutationVariables
+    }).catch(err => {
+      enqueueSnackbar(JSON.stringify(err), {
+        variant: "error"
+      });
+    });
+
+    await ornersQuery.refetch();
+    enqueueSnackbar("オーナーを削除しました", {
+      variant: "default"
     });
   };
 
   return (
     <>
       <div className={classes.wrap}>
+        {JSON.stringify(newOrnerImages)}
         {ornersQuery.loading &&
           [...Array(3)].map((value, index) => (
             <Card className={classes.card} key={index}>
@@ -119,7 +248,25 @@ const Orners: React.FC = () => {
             <Card key={orner?.id}>
               <CardContent>
                 <Typography>{orner?.id}</Typography>
+                <Typography>{orner?.name}</Typography>
+                <Typography>{orner?.email}</Typography>
+                <Typography>{orner?.address}</Typography>
+                <Avatar
+                  src={`https://sicfler-bucket.s3-ap-northeast-1.amazonaws.com/${orner?.icon!}`}
+                />
+                <Typography>{orner?.images.toString()}</Typography>
+                <Typography>{orner?.discription}</Typography>
+                <Typography>{JSON.stringify(orner?.location)}</Typography>
               </CardContent>
+              <CardActions>
+                <Button
+                  onClick={async () => {
+                    await onRequestDeleteOrner(orner?.id!);
+                  }}
+                >
+                  削除
+                </Button>
+              </CardActions>
             </Card>
           ))}
       </div>
@@ -139,8 +286,8 @@ const Orners: React.FC = () => {
               ユーザーIDを指定
               <TextField
                 className={classes.textField}
-                // value={newUserEmail}
-                // onChange={e => setNewUserEmail(e.target.value)}
+                value={newOrnerUserId}
+                onChange={e => setNewOrnerUserId(e.target.value)}
               />
             </InputLabel>
           </div>
@@ -149,9 +296,8 @@ const Orners: React.FC = () => {
               連絡用Email
               <TextField
                 className={classes.textField}
-                type="password"
-                // value={newUserPwd}
-                // onChange={e => setNewUserPwd(e.target.value)}
+                value={newOrnerEmail}
+                onChange={e => setNewOrnerEmail(e.target.value)}
               />
             </InputLabel>
           </div>
@@ -160,9 +306,8 @@ const Orners: React.FC = () => {
               オーナー名
               <TextField
                 className={classes.textField}
-                type="password"
-                // value={newUserPwd}
-                // onChange={e => setNewUserPwd(e.target.value)}
+                value={newOrnerName}
+                onChange={e => setNewOrnerName(e.target.value)}
               />
             </InputLabel>
           </div>
@@ -171,32 +316,83 @@ const Orners: React.FC = () => {
               自己紹介文
               <TextField
                 className={classes.textField}
-                type="password"
-                // value={newUserPwd}
-                // onChange={e => setNewUserPwd(e.target.value)}
+                rows={4}
+                rowsMax={8}
+                multiline={true}
+                value={newOrnerDetail}
+                onChange={e => setNewOrnerDetail(e.target.value)}
               />
             </InputLabel>
           </div>
           <div className={classes.textFieldWrapper}>
             <InputLabel>
               アイコン
-              <TextField
-                className={classes.textField}
-                type="password"
-                // value={newUserPwd}
-                // onChange={e => setNewUserPwd(e.target.value)}
-              />
+              <div className={classes.textFieldWrapper}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className={classes.textField}
+                >
+                  画像を選択
+                  <input
+                    type="file"
+                    className={classes.fileInput}
+                    onChange={e =>
+                      e.target.files &&
+                      setNewOrnerIcon({
+                        objectUrl: URL.createObjectURL(e.target.files[0]),
+                        fileType: e.target.files[0].type
+                      })
+                    }
+                  />
+                </Button>
+              </div>
             </InputLabel>
           </div>
+          {newOrnerIcon && (
+            <div className={classes.textFieldWrapper}>
+              <InputLabel>
+                アイコンプレビュー
+                <div className={classes.textFieldWrapper}>
+                  <Avatar
+                    src={newOrnerIcon.objectUrl}
+                    className={classes.avatar}
+                  />
+                </div>
+              </InputLabel>
+              <Button
+                onClick={() =>
+                  setNewOrnerIcon({
+                    objectUrl: "",
+                    fileType: ""
+                  })
+                }
+              >
+                アイコン削除
+              </Button>
+            </div>
+          )}
           <div className={classes.textFieldWrapper}>
             <InputLabel>
               イメージ一覧
-              <TextField
-                className={classes.textField}
-                type="password"
-                // value={newUserPwd}
-                // onChange={e => setNewUserPwd(e.target.value)}
-              />
+              <div className={classes.textFieldWrapper}>
+                <DropzoneArea
+                  showFileNamesInPreview={true}
+                  showPreviewsInDropzone={true}
+                  onChange={files =>
+                    files &&
+                    setNewOrnerImages(
+                      files.map(
+                        (file: any) =>
+                          ({
+                            objectUrl: URL.createObjectURL(file),
+                            fileType: file.type
+                          } as UploadFile)
+                      )
+                    )
+                  }
+                />
+              </div>
             </InputLabel>
           </div>
           <div className={classes.textFieldWrapper}>
@@ -204,9 +400,38 @@ const Orners: React.FC = () => {
               住所
               <TextField
                 className={classes.textField}
-                type="password"
-                // value={newUserPwd}
-                // onChange={e => setNewUserPwd(e.target.value)}
+                value={newOrnerAdress}
+                onChange={e => setNewOrnerAdress(e.target.value)}
+              />
+            </InputLabel>
+          </div>
+          <div className={classes.textFieldWrapper}>
+            <InputLabel>
+              緯度
+              <TextField
+                className={classes.textField}
+                value={newOrnerLocation.xIndex}
+                onChange={e =>
+                  setNewOrnerLocation({
+                    ...newOrnerLocation,
+                    xIndex: Number(e.target.value)
+                  })
+                }
+              />
+            </InputLabel>
+          </div>
+          <div className={classes.textFieldWrapper}>
+            <InputLabel>
+              経度
+              <TextField
+                className={classes.textField}
+                value={newOrnerLocation.yIndex}
+                onChange={e =>
+                  setNewOrnerLocation({
+                    ...newOrnerLocation,
+                    yIndex: Number(e.target.value)
+                  })
+                }
               />
             </InputLabel>
           </div>

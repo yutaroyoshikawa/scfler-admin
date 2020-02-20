@@ -132,7 +132,7 @@ const Header: React.FC<Props> = props => {
         <Divider />
         <List>
           {pages.map((item, key) => (
-            <Link to={item.url}>
+            <Link to={item.url} key={key}>
               <ListItem key={key} button={true}>
                 <ListItemIcon>{item.icon}</ListItemIcon>
                 <ListItemText className={classes.listItemName}>

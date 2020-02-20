@@ -30,6 +30,8 @@ const GET_USERS = gql`
   query {
     myInfo {
       id
+      creationDate
+      lastModifiedDate
       role
     }
   }
