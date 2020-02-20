@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import Button from "@material-ui/core/Button";
 import { useQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
@@ -12,6 +12,7 @@ import TextField from "@material-ui/core/TextField";
 import { useSnackbar } from "notistack";
 import Title from "./Title";
 import { signIn, newPasswordChallenge } from "../common/auth";
+import { useMyInfoQuery, Roles } from "../gen/graphql-client-api";
 
 const useStyle = makeStyles((theme: Theme) => ({
   wrap: {
@@ -41,10 +42,35 @@ const GET_LOGIN_STATE = gql`
 
 const LoginProvider: React.FC = props => {
   const { data, client } = useQuery(GET_LOGIN_STATE);
+  const myInfoQuery = useMyInfoQuery();
   const [userName, setUserName] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const { enqueueSnackbar } = useSnackbar();
   const classes = useStyle();
+
+  useMemo(() => {
+    if (myInfoQuery.error) {
+      client.writeData({
+        data: {
+          ...data,
+          isLoggedIn: false,
+          loggedInId: "",
+          loggedInRole: Roles.User
+        }
+      });
+    }
+
+    if (data.isLoggedIn && myInfoQuery.data) {
+      client.writeData({
+        data: {
+          ...data,
+          loggedInId: myInfoQuery.data.myInfo.id,
+          loggedInRole: myInfoQuery.data.myInfo.role
+        }
+      });
+    }
+    // eslint-disable-next-line
+  }, [myInfoQuery.error, data.isLoggedIn, myInfoQuery.data]);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
