@@ -269,11 +269,151 @@ const Posts: React.FC = () => {
                 の投稿一覧
               </Title>
               {postsQuery.data?.posts.map(post => (
-                <Card key={post?.id}>
+                <Card key={post?.id} className={classes.card}>
                   <CardContent>
-                    <div>
-                      <Typography>Post ID</Typography>
+                    <div className={classes.attributeWrap}>
+                      <Typography
+                        className={classes.title}
+                        color="textSecondary"
+                      >
+                        Post ID
+                      </Typography>
                       <Typography>{post?.id}</Typography>
+                    </div>
+                    <div className={classes.attributeWrap}>
+                      <Typography
+                        className={classes.title}
+                        color="textSecondary"
+                      >
+                        イベント名
+                      </Typography>
+                      <Typography>{post?.name}</Typography>
+                    </div>
+                    <div className={classes.attributeWrap}>
+                      <Typography
+                        className={classes.title}
+                        color="textSecondary"
+                      >
+                        開始日時
+                      </Typography>
+                      <Typography>
+                        {new Date(post?.start).toUTCString()}
+                      </Typography>
+                    </div>
+                    <div className={classes.attributeWrap}>
+                      <Typography
+                        className={classes.title}
+                        color="textSecondary"
+                      >
+                        終了日時
+                      </Typography>
+                      <Typography>
+                        {new Date(post?.finish).toUTCString()}
+                      </Typography>
+                    </div>
+                    <div className={classes.attributeWrap}>
+                      <Typography
+                        className={classes.title}
+                        color="textSecondary"
+                      >
+                        詳細説明
+                      </Typography>
+                      <Typography>{post?.discription}</Typography>
+                    </div>
+                    <div className={classes.attributeWrap}>
+                      <Typography
+                        className={classes.title}
+                        color="textSecondary"
+                      >
+                        サムネイル画像
+                      </Typography>
+                      <img
+                        src={`https://sicfler-bucket.s3-ap-northeast-1.amazonaws.com/${post?.sumbnail!}`}
+                        alt="サムネイル画像"
+                        className={classes.ornerImage}
+                      />
+                    </div>
+                    <div className={classes.attributeWrap}>
+                      <Typography
+                        className={classes.title}
+                        color="textSecondary"
+                      >
+                        イメージ一覧
+                      </Typography>
+                      {post?.images.map(image => (
+                        <img
+                          src={`https://sicfler-bucket.s3-ap-northeast-1.amazonaws.com/${image}`}
+                          alt="イベントイメージ"
+                          key={image!}
+                          className={classes.ornerImage}
+                        />
+                      ))}
+                    </div>
+                    <div>
+                      <Typography
+                        className={classes.title}
+                        color="textSecondary"
+                      >
+                        訪問者一覧
+                      </Typography>
+                      {post?.visitors.map(visitor => (
+                        <div key={visitor?.visitorName}>
+                          <Typography>
+                            訪問者名：
+                            {visitor?.visitorName}
+                          </Typography>
+                          <Typography>
+                            詳細説明：
+                            {visitor?.discription}
+                          </Typography>
+                          <Typography>サムネイル画像</Typography>
+                          <img
+                            src={`https://sicfler-bucket.s3-ap-northeast-1.amazonaws.com/${visitor?.sumbnail}`}
+                            alt="訪問者サムネイル"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                    <div className={classes.attributeWrap}>
+                      <Typography
+                        className={classes.title}
+                        color="textSecondary"
+                      >
+                        イベント開催地住所
+                      </Typography>
+                      <Typography>{post?.address}</Typography>
+                    </div>
+                    <div className={classes.attributeWrap}>
+                      <Typography
+                        className={classes.title}
+                        color="textSecondary"
+                      >
+                        イベント開催地座標
+                      </Typography>
+                      <Typography>
+                        緯度：
+                        {post?.location?.xIndex}
+                      </Typography>
+                      <Typography>
+                        経度：
+                        {post?.location?.yIndex}
+                      </Typography>
+                    </div>
+                    <div className={classes.attributeWrap}>
+                      <Typography
+                        className={classes.title}
+                        color="textSecondary"
+                      >
+                        イベントターゲット
+                      </Typography>
+                      <Typography>
+                        年代：
+                        {post?.target.ageGroup}
+                      </Typography>
+                      <Typography>
+                        性別：
+                        {post?.target.gender}
+                      </Typography>
                     </div>
                   </CardContent>
                 </Card>
