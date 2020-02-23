@@ -193,6 +193,7 @@ const Posts: React.FC = () => {
         start: newPostStart,
         finish: newPostFinish,
         discription: newPostDiscription,
+        sicflerId: "0",
         sumbnail: sumbnailUrl,
         images: postImages,
         ornerId: loginState.data.loggedInId,
