@@ -15,13 +15,13 @@ export type Scalars = {
 
 export type Geolocation = {
    __typename?: 'Geolocation',
-  xIndex?: Maybe<Scalars['Float']>,
-  yIndex?: Maybe<Scalars['Float']>,
+  lat?: Maybe<Scalars['Float']>,
+  lng?: Maybe<Scalars['Float']>,
 };
 
 export type GeolocationInput = {
-  xIndex?: Maybe<Scalars['Float']>,
-  yIndex?: Maybe<Scalars['Float']>,
+  lat?: Maybe<Scalars['Float']>,
+  lng?: Maybe<Scalars['Float']>,
 };
 
 export type Mutation = {
@@ -90,6 +90,7 @@ export type MutationAddPostArgs = {
   start: Scalars['DateTime'],
   finish: Scalars['DateTime'],
   discription?: Maybe<Scalars['String']>,
+  sicflerId: Scalars['ID'],
   sumbnail?: Maybe<Scalars['String']>,
   images: Array<Maybe<Scalars['String']>>,
   ornerId: Scalars['String'],
@@ -105,6 +106,7 @@ export type MutationUpdatePostArgs = {
   start: Scalars['DateTime'],
   finish: Scalars['DateTime'],
   discription?: Maybe<Scalars['String']>,
+  sicflerId: Scalars['ID'],
   sumbnail?: Maybe<Scalars['String']>,
   images: Array<Maybe<Scalars['String']>>,
   ornerId: Scalars['String'],
@@ -137,6 +139,7 @@ export type Post = {
   start: Scalars['DateTime'],
   finish: Scalars['DateTime'],
   discription?: Maybe<Scalars['String']>,
+  sicflerId: Scalars['ID'],
   sumbnail?: Maybe<Scalars['String']>,
   images: Array<Maybe<Scalars['String']>>,
   visitors: Array<Maybe<Visitor>>,
@@ -155,6 +158,8 @@ export type Query = {
   orners: Array<Maybe<Orner>>,
   post: Post,
   posts: Array<Maybe<Post>>,
+  postsByOrnerId: Array<Maybe<Post>>,
+  postsBySicflerId: Array<Maybe<Post>>,
 };
 
 
@@ -173,8 +178,13 @@ export type QueryPostArgs = {
 };
 
 
-export type QueryPostsArgs = {
-  ornerId?: Maybe<Scalars['ID']>
+export type QueryPostsByOrnerIdArgs = {
+  ornerId: Scalars['ID']
+};
+
+
+export type QueryPostsBySicflerIdArgs = {
+  sicflerId: Scalars['ID']
 };
 
 export type ReturnDelete = {
@@ -234,7 +244,7 @@ export type AddOrnerMutation = (
     & Pick<Orner, 'id' | 'email' | 'name' | 'discription' | 'icon' | 'images' | 'address'>
     & { location: Maybe<(
       { __typename?: 'Geolocation' }
-      & Pick<Geolocation, 'xIndex' | 'yIndex'>
+      & Pick<Geolocation, 'lat' | 'lng'>
     )> }
   ) }
 );
@@ -244,6 +254,7 @@ export type AddPostMutationVariables = {
   start: Scalars['DateTime'],
   finish: Scalars['DateTime'],
   discription?: Maybe<Scalars['String']>,
+  sicflerId: Scalars['ID'],
   sumbnail?: Maybe<Scalars['String']>,
   images: Array<Maybe<Scalars['String']>>,
   ornerId: Scalars['String'],
@@ -257,7 +268,7 @@ export type AddPostMutation = (
   { __typename?: 'Mutation' }
   & { addPost: (
     { __typename?: 'Post' }
-    & Pick<Post, 'id' | 'name' | 'start' | 'finish' | 'discription' | 'sumbnail' | 'images' | 'address'>
+    & Pick<Post, 'id' | 'name' | 'start' | 'finish' | 'discription' | 'sicflerId' | 'sumbnail' | 'images' | 'address'>
     & { visitors: Array<Maybe<(
       { __typename?: 'Visitor' }
       & Pick<Visitor, 'visitorName' | 'discription' | 'sumbnail'>
@@ -266,11 +277,11 @@ export type AddPostMutation = (
       & Pick<Orner, 'id' | 'email' | 'name' | 'discription' | 'icon' | 'images' | 'address'>
       & { location: Maybe<(
         { __typename?: 'Geolocation' }
-        & Pick<Geolocation, 'xIndex' | 'yIndex'>
+        & Pick<Geolocation, 'lat' | 'lng'>
       )> }
     ), location: Maybe<(
       { __typename?: 'Geolocation' }
-      & Pick<Geolocation, 'xIndex' | 'yIndex'>
+      & Pick<Geolocation, 'lat' | 'lng'>
     )>, target: (
       { __typename?: 'Target' }
       & Pick<Target, 'ageGroup' | 'gender'>
@@ -350,7 +361,7 @@ export type UpdateOrnerMutation = (
     & Pick<Orner, 'id' | 'email' | 'name' | 'discription' | 'icon' | 'images' | 'address'>
     & { location: Maybe<(
       { __typename?: 'Geolocation' }
-      & Pick<Geolocation, 'xIndex' | 'yIndex'>
+      & Pick<Geolocation, 'lat' | 'lng'>
     )> }
   ) }
 );
@@ -361,6 +372,7 @@ export type UpdatePostMutationVariables = {
   start: Scalars['DateTime'],
   finish: Scalars['DateTime'],
   discription?: Maybe<Scalars['String']>,
+  sicflerId: Scalars['ID'],
   sumbnail?: Maybe<Scalars['String']>,
   images: Array<Maybe<Scalars['String']>>,
   ornerId: Scalars['String'],
@@ -374,7 +386,7 @@ export type UpdatePostMutation = (
   { __typename?: 'Mutation' }
   & { updatePost: (
     { __typename?: 'Post' }
-    & Pick<Post, 'id' | 'name' | 'start' | 'finish' | 'discription' | 'sumbnail' | 'images' | 'address'>
+    & Pick<Post, 'id' | 'name' | 'start' | 'finish' | 'discription' | 'sicflerId' | 'sumbnail' | 'images' | 'address'>
     & { visitors: Array<Maybe<(
       { __typename?: 'Visitor' }
       & Pick<Visitor, 'visitorName' | 'discription' | 'sumbnail'>
@@ -383,11 +395,11 @@ export type UpdatePostMutation = (
       & Pick<Orner, 'id' | 'email' | 'name' | 'discription' | 'icon' | 'images' | 'address'>
       & { location: Maybe<(
         { __typename?: 'Geolocation' }
-        & Pick<Geolocation, 'xIndex' | 'yIndex'>
+        & Pick<Geolocation, 'lat' | 'lng'>
       )> }
     ), location: Maybe<(
       { __typename?: 'Geolocation' }
-      & Pick<Geolocation, 'xIndex' | 'yIndex'>
+      & Pick<Geolocation, 'lat' | 'lng'>
     )>, target: (
       { __typename?: 'Target' }
       & Pick<Target, 'ageGroup' | 'gender'>
@@ -433,7 +445,7 @@ export type OrnerQuery = (
     & Pick<Orner, 'id' | 'email' | 'name' | 'discription' | 'icon' | 'images' | 'address'>
     & { location: Maybe<(
       { __typename?: 'Geolocation' }
-      & Pick<Geolocation, 'xIndex' | 'yIndex'>
+      & Pick<Geolocation, 'lat' | 'lng'>
     )> }
   ) }
 );
@@ -448,7 +460,7 @@ export type OrnersQuery = (
     & Pick<Orner, 'id' | 'email' | 'name' | 'discription' | 'icon' | 'images' | 'address'>
     & { location: Maybe<(
       { __typename?: 'Geolocation' }
-      & Pick<Geolocation, 'xIndex' | 'yIndex'>
+      & Pick<Geolocation, 'lat' | 'lng'>
     )> }
   )>> }
 );
@@ -462,7 +474,7 @@ export type PostQuery = (
   { __typename?: 'Query' }
   & { post: (
     { __typename?: 'Post' }
-    & Pick<Post, 'id' | 'name' | 'start' | 'finish' | 'discription' | 'sumbnail' | 'images' | 'address'>
+    & Pick<Post, 'id' | 'name' | 'start' | 'finish' | 'discription' | 'sicflerId' | 'sumbnail' | 'images' | 'address'>
     & { visitors: Array<Maybe<(
       { __typename?: 'Visitor' }
       & Pick<Visitor, 'visitorName' | 'discription' | 'sumbnail'>
@@ -471,11 +483,11 @@ export type PostQuery = (
       & Pick<Orner, 'id' | 'email' | 'name' | 'discription' | 'icon' | 'images' | 'address'>
       & { location: Maybe<(
         { __typename?: 'Geolocation' }
-        & Pick<Geolocation, 'xIndex' | 'yIndex'>
+        & Pick<Geolocation, 'lat' | 'lng'>
       )> }
     ), location: Maybe<(
       { __typename?: 'Geolocation' }
-      & Pick<Geolocation, 'xIndex' | 'yIndex'>
+      & Pick<Geolocation, 'lat' | 'lng'>
     )>, target: (
       { __typename?: 'Target' }
       & Pick<Target, 'ageGroup' | 'gender'>
@@ -483,16 +495,14 @@ export type PostQuery = (
   ) }
 );
 
-export type PostsQueryVariables = {
-  ornerId?: Maybe<Scalars['ID']>
-};
+export type PostsQueryVariables = {};
 
 
 export type PostsQuery = (
   { __typename?: 'Query' }
   & { posts: Array<Maybe<(
     { __typename?: 'Post' }
-    & Pick<Post, 'id' | 'name' | 'start' | 'finish' | 'discription' | 'sumbnail' | 'images' | 'address'>
+    & Pick<Post, 'id' | 'name' | 'start' | 'finish' | 'discription' | 'sumbnail' | 'sicflerId' | 'images' | 'address'>
     & { visitors: Array<Maybe<(
       { __typename?: 'Visitor' }
       & Pick<Visitor, 'visitorName' | 'discription' | 'sumbnail'>
@@ -501,11 +511,71 @@ export type PostsQuery = (
       & Pick<Orner, 'id' | 'email' | 'name' | 'discription' | 'icon' | 'images' | 'address'>
       & { location: Maybe<(
         { __typename?: 'Geolocation' }
-        & Pick<Geolocation, 'xIndex' | 'yIndex'>
+        & Pick<Geolocation, 'lat' | 'lng'>
       )> }
     ), location: Maybe<(
       { __typename?: 'Geolocation' }
-      & Pick<Geolocation, 'xIndex' | 'yIndex'>
+      & Pick<Geolocation, 'lat' | 'lng'>
+    )>, target: (
+      { __typename?: 'Target' }
+      & Pick<Target, 'ageGroup' | 'gender'>
+    ) }
+  )>> }
+);
+
+export type PostsByOrnerIdQueryVariables = {
+  ornerId: Scalars['ID']
+};
+
+
+export type PostsByOrnerIdQuery = (
+  { __typename?: 'Query' }
+  & { postsByOrnerId: Array<Maybe<(
+    { __typename?: 'Post' }
+    & Pick<Post, 'id' | 'name' | 'start' | 'finish' | 'discription' | 'sicflerId' | 'sumbnail' | 'images' | 'address'>
+    & { visitors: Array<Maybe<(
+      { __typename?: 'Visitor' }
+      & Pick<Visitor, 'visitorName' | 'discription' | 'sumbnail'>
+    )>>, orner: (
+      { __typename?: 'Orner' }
+      & Pick<Orner, 'id' | 'email' | 'name' | 'discription' | 'icon' | 'images' | 'address'>
+      & { location: Maybe<(
+        { __typename?: 'Geolocation' }
+        & Pick<Geolocation, 'lat' | 'lng'>
+      )> }
+    ), location: Maybe<(
+      { __typename?: 'Geolocation' }
+      & Pick<Geolocation, 'lat' | 'lng'>
+    )>, target: (
+      { __typename?: 'Target' }
+      & Pick<Target, 'ageGroup' | 'gender'>
+    ) }
+  )>> }
+);
+
+export type PostsBySicflerIdQueryVariables = {
+  sicflerId: Scalars['ID']
+};
+
+
+export type PostsBySicflerIdQuery = (
+  { __typename?: 'Query' }
+  & { postsBySicflerId: Array<Maybe<(
+    { __typename?: 'Post' }
+    & Pick<Post, 'id' | 'name' | 'start' | 'finish' | 'discription' | 'sicflerId' | 'sumbnail' | 'images' | 'address'>
+    & { visitors: Array<Maybe<(
+      { __typename?: 'Visitor' }
+      & Pick<Visitor, 'visitorName' | 'discription' | 'sumbnail'>
+    )>>, orner: (
+      { __typename?: 'Orner' }
+      & Pick<Orner, 'id' | 'email' | 'name' | 'discription' | 'icon' | 'images' | 'address'>
+      & { location: Maybe<(
+        { __typename?: 'Geolocation' }
+        & Pick<Geolocation, 'lat' | 'lng'>
+      )> }
+    ), location: Maybe<(
+      { __typename?: 'Geolocation' }
+      & Pick<Geolocation, 'lat' | 'lng'>
     )>, target: (
       { __typename?: 'Target' }
       & Pick<Target, 'ageGroup' | 'gender'>
@@ -549,8 +619,8 @@ export const AddOrnerDocument = gql`
     images
     address
     location {
-      xIndex
-      yIndex
+      lat
+      lng
     }
   }
 }
@@ -588,13 +658,14 @@ export type AddOrnerMutationHookResult = ReturnType<typeof useAddOrnerMutation>;
 export type AddOrnerMutationResult = ApolloReactCommon.MutationResult<AddOrnerMutation>;
 export type AddOrnerMutationOptions = ApolloReactCommon.BaseMutationOptions<AddOrnerMutation, AddOrnerMutationVariables>;
 export const AddPostDocument = gql`
-    mutation addPost($name: String!, $start: DateTime!, $finish: DateTime!, $discription: String, $sumbnail: String, $images: [String]!, $ornerId: String!, $address: String, $location: GeolocationInput, $target: TargetInput!) {
-  addPost(name: $name, start: $start, finish: $finish, discription: $discription, sumbnail: $sumbnail, images: $images, ornerId: $ornerId, address: $address, location: $location, target: $target) {
+    mutation addPost($name: String!, $start: DateTime!, $finish: DateTime!, $discription: String, $sicflerId: ID!, $sumbnail: String, $images: [String]!, $ornerId: String!, $address: String, $location: GeolocationInput, $target: TargetInput!) {
+  addPost(name: $name, start: $start, finish: $finish, discription: $discription, sicflerId: $sicflerId, sumbnail: $sumbnail, images: $images, ornerId: $ornerId, address: $address, location: $location, target: $target) {
     id
     name
     start
     finish
     discription
+    sicflerId
     sumbnail
     images
     visitors {
@@ -611,14 +682,14 @@ export const AddPostDocument = gql`
       images
       address
       location {
-        xIndex
-        yIndex
+        lat
+        lng
       }
     }
     address
     location {
-      xIndex
-      yIndex
+      lat
+      lng
     }
     target {
       ageGroup
@@ -646,6 +717,7 @@ export type AddPostMutationFn = ApolloReactCommon.MutationFunction<AddPostMutati
  *      start: // value for 'start'
  *      finish: // value for 'finish'
  *      discription: // value for 'discription'
+ *      sicflerId: // value for 'sicflerId'
  *      sumbnail: // value for 'sumbnail'
  *      images: // value for 'images'
  *      ornerId: // value for 'ornerId'
@@ -803,8 +875,8 @@ export const UpdateOrnerDocument = gql`
     images
     address
     location {
-      xIndex
-      yIndex
+      lat
+      lng
     }
   }
 }
@@ -842,13 +914,14 @@ export type UpdateOrnerMutationHookResult = ReturnType<typeof useUpdateOrnerMuta
 export type UpdateOrnerMutationResult = ApolloReactCommon.MutationResult<UpdateOrnerMutation>;
 export type UpdateOrnerMutationOptions = ApolloReactCommon.BaseMutationOptions<UpdateOrnerMutation, UpdateOrnerMutationVariables>;
 export const UpdatePostDocument = gql`
-    mutation updatePost($id: ID!, $name: String!, $start: DateTime!, $finish: DateTime!, $discription: String, $sumbnail: String, $images: [String]!, $ornerId: String!, $address: String, $location: GeolocationInput, $target: TargetInput!) {
-  updatePost(id: $id, name: $name, start: $start, finish: $finish, discription: $discription, sumbnail: $sumbnail, images: $images, ornerId: $ornerId, address: $address, location: $location, target: $target) {
+    mutation updatePost($id: ID!, $name: String!, $start: DateTime!, $finish: DateTime!, $discription: String, $sicflerId: ID!, $sumbnail: String, $images: [String]!, $ornerId: String!, $address: String, $location: GeolocationInput, $target: TargetInput!) {
+  updatePost(id: $id, name: $name, start: $start, finish: $finish, discription: $discription, sicflerId: $sicflerId, sumbnail: $sumbnail, images: $images, ornerId: $ornerId, address: $address, location: $location, target: $target) {
     id
     name
     start
     finish
     discription
+    sicflerId
     sumbnail
     images
     visitors {
@@ -865,14 +938,14 @@ export const UpdatePostDocument = gql`
       images
       address
       location {
-        xIndex
-        yIndex
+        lat
+        lng
       }
     }
     address
     location {
-      xIndex
-      yIndex
+      lat
+      lng
     }
     target {
       ageGroup
@@ -901,6 +974,7 @@ export type UpdatePostMutationFn = ApolloReactCommon.MutationFunction<UpdatePost
  *      start: // value for 'start'
  *      finish: // value for 'finish'
  *      discription: // value for 'discription'
+ *      sicflerId: // value for 'sicflerId'
  *      sumbnail: // value for 'sumbnail'
  *      images: // value for 'images'
  *      ornerId: // value for 'ornerId'
@@ -1001,8 +1075,8 @@ export const OrnerDocument = gql`
     images
     address
     location {
-      xIndex
-      yIndex
+      lat
+      lng
     }
   }
 }
@@ -1044,8 +1118,8 @@ export const OrnersDocument = gql`
     images
     address
     location {
-      xIndex
-      yIndex
+      lat
+      lng
     }
   }
 }
@@ -1083,6 +1157,7 @@ export const PostDocument = gql`
     start
     finish
     discription
+    sicflerId
     sumbnail
     images
     visitors {
@@ -1099,14 +1174,14 @@ export const PostDocument = gql`
       images
       address
       location {
-        xIndex
-        yIndex
+        lat
+        lng
       }
     }
     address
     location {
-      xIndex
-      yIndex
+      lat
+      lng
     }
     target {
       ageGroup
@@ -1142,14 +1217,15 @@ export type PostQueryHookResult = ReturnType<typeof usePostQuery>;
 export type PostLazyQueryHookResult = ReturnType<typeof usePostLazyQuery>;
 export type PostQueryResult = ApolloReactCommon.QueryResult<PostQuery, PostQueryVariables>;
 export const PostsDocument = gql`
-    query posts($ornerId: ID) {
-  posts(ornerId: $ornerId) {
+    query posts {
+  posts {
     id
     name
     start
     finish
     discription
     sumbnail
+    sicflerId
     images
     visitors {
       visitorName
@@ -1165,14 +1241,14 @@ export const PostsDocument = gql`
       images
       address
       location {
-        xIndex
-        yIndex
+        lat
+        lng
       }
     }
     address
     location {
-      xIndex
-      yIndex
+      lat
+      lng
     }
     target {
       ageGroup
@@ -1194,7 +1270,6 @@ export const PostsDocument = gql`
  * @example
  * const { data, loading, error } = usePostsQuery({
  *   variables: {
- *      ornerId: // value for 'ornerId'
  *   },
  * });
  */
@@ -1207,6 +1282,140 @@ export function usePostsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOp
 export type PostsQueryHookResult = ReturnType<typeof usePostsQuery>;
 export type PostsLazyQueryHookResult = ReturnType<typeof usePostsLazyQuery>;
 export type PostsQueryResult = ApolloReactCommon.QueryResult<PostsQuery, PostsQueryVariables>;
+export const PostsByOrnerIdDocument = gql`
+    query postsByOrnerId($ornerId: ID!) {
+  postsByOrnerId(ornerId: $ornerId) {
+    id
+    name
+    start
+    finish
+    discription
+    sicflerId
+    sumbnail
+    images
+    visitors {
+      visitorName
+      discription
+      sumbnail
+    }
+    orner {
+      id
+      email
+      name
+      discription
+      icon
+      images
+      address
+      location {
+        lat
+        lng
+      }
+    }
+    address
+    location {
+      lat
+      lng
+    }
+    target {
+      ageGroup
+      gender
+    }
+  }
+}
+    `;
+
+/**
+ * __usePostsByOrnerIdQuery__
+ *
+ * To run a query within a React component, call `usePostsByOrnerIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `usePostsByOrnerIdQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = usePostsByOrnerIdQuery({
+ *   variables: {
+ *      ornerId: // value for 'ornerId'
+ *   },
+ * });
+ */
+export function usePostsByOrnerIdQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<PostsByOrnerIdQuery, PostsByOrnerIdQueryVariables>) {
+        return ApolloReactHooks.useQuery<PostsByOrnerIdQuery, PostsByOrnerIdQueryVariables>(PostsByOrnerIdDocument, baseOptions);
+      }
+export function usePostsByOrnerIdLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<PostsByOrnerIdQuery, PostsByOrnerIdQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<PostsByOrnerIdQuery, PostsByOrnerIdQueryVariables>(PostsByOrnerIdDocument, baseOptions);
+        }
+export type PostsByOrnerIdQueryHookResult = ReturnType<typeof usePostsByOrnerIdQuery>;
+export type PostsByOrnerIdLazyQueryHookResult = ReturnType<typeof usePostsByOrnerIdLazyQuery>;
+export type PostsByOrnerIdQueryResult = ApolloReactCommon.QueryResult<PostsByOrnerIdQuery, PostsByOrnerIdQueryVariables>;
+export const PostsBySicflerIdDocument = gql`
+    query postsBySicflerId($sicflerId: ID!) {
+  postsBySicflerId(sicflerId: $sicflerId) {
+    id
+    name
+    start
+    finish
+    discription
+    sicflerId
+    sumbnail
+    images
+    visitors {
+      visitorName
+      discription
+      sumbnail
+    }
+    orner {
+      id
+      email
+      name
+      discription
+      icon
+      images
+      address
+      location {
+        lat
+        lng
+      }
+    }
+    address
+    location {
+      lat
+      lng
+    }
+    target {
+      ageGroup
+      gender
+    }
+  }
+}
+    `;
+
+/**
+ * __usePostsBySicflerIdQuery__
+ *
+ * To run a query within a React component, call `usePostsBySicflerIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `usePostsBySicflerIdQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = usePostsBySicflerIdQuery({
+ *   variables: {
+ *      sicflerId: // value for 'sicflerId'
+ *   },
+ * });
+ */
+export function usePostsBySicflerIdQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<PostsBySicflerIdQuery, PostsBySicflerIdQueryVariables>) {
+        return ApolloReactHooks.useQuery<PostsBySicflerIdQuery, PostsBySicflerIdQueryVariables>(PostsBySicflerIdDocument, baseOptions);
+      }
+export function usePostsBySicflerIdLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<PostsBySicflerIdQuery, PostsBySicflerIdQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<PostsBySicflerIdQuery, PostsBySicflerIdQueryVariables>(PostsBySicflerIdDocument, baseOptions);
+        }
+export type PostsBySicflerIdQueryHookResult = ReturnType<typeof usePostsBySicflerIdQuery>;
+export type PostsBySicflerIdLazyQueryHookResult = ReturnType<typeof usePostsBySicflerIdLazyQuery>;
+export type PostsBySicflerIdQueryResult = ApolloReactCommon.QueryResult<PostsBySicflerIdQuery, PostsBySicflerIdQueryVariables>;
 export const UserDocument = gql`
     query user($id: ID!) {
   user(id: $id) {

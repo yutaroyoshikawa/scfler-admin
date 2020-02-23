@@ -34,8 +34,8 @@ interface UploadFile {
 }
 
 interface Location {
-  xIndex: number;
-  yIndex: number;
+  lat: number;
+  lng: number;
 }
 
 const useStyle = makeStyles((theme: Theme) => ({
@@ -104,8 +104,8 @@ const Posts: React.FC = () => {
   const [newPostDiscription, setNewPostDiscription] = useState<string>("");
   const [newPostAddress, setNewPostAddress] = useState<string>("");
   const [newPostLocation, setNewPostLocation] = useState<Location>({
-    xIndex: 0,
-    yIndex: 0
+    lat: 0,
+    lng: 0
   });
   const [newPostSumbnail, setNewPostSumbnail] = useState<UploadFile>({
     objectUrl: "",
@@ -392,11 +392,11 @@ const Posts: React.FC = () => {
                       </Typography>
                       <Typography>
                         緯度：
-                        {post?.location?.xIndex}
+                        {post?.location?.lat}
                       </Typography>
                       <Typography>
                         経度：
-                        {post?.location?.yIndex}
+                        {post?.location?.lng}
                       </Typography>
                     </div>
                     <div className={classes.attributeWrap}>
@@ -582,11 +582,11 @@ const Posts: React.FC = () => {
               緯度
               <TextField
                 className={classes.textField}
-                value={newPostLocation.xIndex}
+                value={newPostLocation.lat}
                 onChange={e =>
                   setNewPostLocation({
                     ...newPostLocation,
-                    xIndex: Number(e.target.value)
+                    lat: Number(e.target.value)
                   })
                 }
               />
@@ -597,11 +597,11 @@ const Posts: React.FC = () => {
               経度
               <TextField
                 className={classes.textField}
-                value={newPostLocation.yIndex}
+                value={newPostLocation.lng}
                 onChange={e =>
                   setNewPostLocation({
                     ...newPostLocation,
-                    yIndex: Number(e.target.value)
+                    lng: Number(e.target.value)
                   })
                 }
               />

@@ -76,8 +76,8 @@ const useStyle = makeStyles((theme: Theme) => ({
 }));
 
 interface Location {
-  xIndex: number;
-  yIndex: number;
+  lat: number;
+  lng: number;
 }
 
 interface UploadFile {
@@ -328,34 +328,34 @@ const OrnerInfo: React.FC<OrnerInfoProps> = props => {
           </Typography>
           {isEditting ? (
             <TextField
-              value={newOrnerLocation.xIndex}
+              value={newOrnerLocation.lat}
               onChange={e =>
                 setNewOrnerLocation({
                   ...newOrnerLocation,
-                  xIndex: Number(e.target.value)
+                  lat: Number(e.target.value)
                 })
               }
             />
           ) : (
             <Typography>
               緯度：
-              {props.location?.xIndex!}
+              {props.location?.lat!}
             </Typography>
           )}
           {isEditting ? (
             <TextField
-              value={newOrnerLocation.yIndex}
+              value={newOrnerLocation.lng}
               onChange={e =>
                 setNewOrnerLocation({
                   ...newOrnerLocation,
-                  yIndex: Number(e.target.value)
+                  lng: Number(e.target.value)
                 })
               }
             />
           ) : (
             <Typography>
               経度：
-              {props.location?.yIndex!}
+              {props.location?.lng!}
             </Typography>
           )}
         </div>
@@ -409,8 +409,8 @@ const Orners: React.FC = () => {
   const [newOrnerImages, setNewOrnerImages] = useState<UploadFile[]>([]);
   const [newOrnerAdress, setNewOrnerAdress] = useState<string>("");
   const [newOrnerLocation, setNewOrnerLocation] = useState<Location>({
-    xIndex: 0,
-    yIndex: 0
+    lat: 0,
+    lng: 0
   });
 
   useMemo(() => {
@@ -712,11 +712,11 @@ const Orners: React.FC = () => {
               緯度
               <TextField
                 className={classes.textField}
-                value={newOrnerLocation.xIndex}
+                value={newOrnerLocation.lat}
                 onChange={e =>
                   setNewOrnerLocation({
                     ...newOrnerLocation,
-                    xIndex: Number(e.target.value)
+                    lat: Number(e.target.value)
                   })
                 }
               />
@@ -727,11 +727,11 @@ const Orners: React.FC = () => {
               経度
               <TextField
                 className={classes.textField}
-                value={newOrnerLocation.yIndex}
+                value={newOrnerLocation.lng}
                 onChange={e =>
                   setNewOrnerLocation({
                     ...newOrnerLocation,
-                    yIndex: Number(e.target.value)
+                    lng: Number(e.target.value)
                   })
                 }
               />

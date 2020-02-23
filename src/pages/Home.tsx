@@ -170,7 +170,7 @@ const OrnerInfo: React.FC<OrnerInfoProps> = props => {
                 color="textPrimary"
               >
                 緯度：
-                {data?.orner.location?.xIndex}
+                {data?.orner.location?.lat}
               </Typography>
               <Typography
                 gutterBottom
@@ -179,7 +179,7 @@ const OrnerInfo: React.FC<OrnerInfoProps> = props => {
                 color="textPrimary"
               >
                 経度：
-                {data?.orner.location?.yIndex}
+                {data?.orner.location?.lng}
               </Typography>
             </>
           )}
