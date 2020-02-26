@@ -112,7 +112,8 @@ export type MutationUpdatePostArgs = {
   ornerId: Scalars['String'],
   address?: Maybe<Scalars['String']>,
   location?: Maybe<GeolocationInput>,
-  target: TargetInput
+  target: TargetInput,
+  visitors: Array<Maybe<VisitorInput>>
 };
 
 
@@ -220,6 +221,12 @@ export type User = {
 
 export type Visitor = {
    __typename?: 'Visitor',
+  visitorName: Scalars['String'],
+  discription?: Maybe<Scalars['String']>,
+  sumbnail?: Maybe<Scalars['String']>,
+};
+
+export type VisitorInput = {
   visitorName: Scalars['String'],
   discription?: Maybe<Scalars['String']>,
   sumbnail?: Maybe<Scalars['String']>,
@@ -378,7 +385,8 @@ export type UpdatePostMutationVariables = {
   ornerId: Scalars['String'],
   address?: Maybe<Scalars['String']>,
   location?: Maybe<GeolocationInput>,
-  target: TargetInput
+  target: TargetInput,
+  visitors: Array<Maybe<VisitorInput>>
 };
 
 
@@ -914,8 +922,8 @@ export type UpdateOrnerMutationHookResult = ReturnType<typeof useUpdateOrnerMuta
 export type UpdateOrnerMutationResult = ApolloReactCommon.MutationResult<UpdateOrnerMutation>;
 export type UpdateOrnerMutationOptions = ApolloReactCommon.BaseMutationOptions<UpdateOrnerMutation, UpdateOrnerMutationVariables>;
 export const UpdatePostDocument = gql`
-    mutation updatePost($id: ID!, $name: String!, $start: DateTime!, $finish: DateTime!, $discription: String, $sicflerId: ID!, $sumbnail: String, $images: [String]!, $ornerId: String!, $address: String, $location: GeolocationInput, $target: TargetInput!) {
-  updatePost(id: $id, name: $name, start: $start, finish: $finish, discription: $discription, sicflerId: $sicflerId, sumbnail: $sumbnail, images: $images, ornerId: $ornerId, address: $address, location: $location, target: $target) {
+    mutation updatePost($id: ID!, $name: String!, $start: DateTime!, $finish: DateTime!, $discription: String, $sicflerId: ID!, $sumbnail: String, $images: [String]!, $ornerId: String!, $address: String, $location: GeolocationInput, $target: TargetInput!, $visitors: [VisitorInput]!) {
+  updatePost(id: $id, name: $name, start: $start, finish: $finish, discription: $discription, sicflerId: $sicflerId, sumbnail: $sumbnail, images: $images, ornerId: $ornerId, address: $address, location: $location, target: $target, visitors: $visitors) {
     id
     name
     start
@@ -981,6 +989,7 @@ export type UpdatePostMutationFn = ApolloReactCommon.MutationFunction<UpdatePost
  *      address: // value for 'address'
  *      location: // value for 'location'
  *      target: // value for 'target'
+ *      visitors: // value for 'visitors'
  *   },
  * });
  */

@@ -25,7 +25,9 @@ import Title from "../components/Title";
 import {
   Roles,
   usePostsQuery,
-  useAddPostMutation
+  useAddPostMutation,
+  useUpdatePostMutation,
+  Post
 } from "../gen/graphql-client-api";
 
 interface UploadFile {
@@ -88,6 +90,401 @@ const GET_LOGIN_STATE = gql`
     loggedInRole @client
   }
 `;
+
+interface PostInfoProps extends Post {
+  handleSuccessUpdateUser: () => void;
+  handleFailureUpdateUser: (error: any) => void;
+  handleSuccessDeleteUser: () => void;
+  handleFailureDeleteUser: (error: any) => void;
+}
+
+const PostInfo: React.FC<PostInfoProps> = props => {
+  const classes = useStyle();
+  const [updatePostMutation] = useUpdatePostMutation();
+  const [isEditting, setIsEditting] = useState<boolean>(false);
+  const [newPostName, setNewPostName] = useState<string>(props.name);
+  const [newPostStart, setNewPostStart] = useState<string>(props.start);
+  const [newPostFinish, setNewPostFinish] = useState<string>(props.finish);
+  const [newPostDiscription, setNewPostDiscription] = useState<string>(
+    props.discription || ""
+  );
+  const [newPostAddress, setNewPostAddress] = useState<string>(
+    props.address || ""
+  );
+  const [newPostLocation, setNewPostLocation] = useState<Location>({
+    lat: props.location?.lat!,
+    lng: props.location?.lng!
+  });
+  const [newPostSumbnail, setNewPostSumbnail] = useState<UploadFile>({
+    objectUrl: "",
+    fileType: ""
+  });
+  const [newPostImages, setNewPostImages] = useState<UploadFile[]>([]);
+  const [newPostTargetAgeGroup, setNewPostTargetAgeGroup] = useState<number>(
+    props.target.ageGroup!
+  );
+  const [newPostTargetGender, setNewPostTargetGender] = useState<number>(
+    props.target.gender!
+  );
+
+  const [isOpenNewVisitorDialog, setIsOpenNewVisitorDialog] = useState<boolean>(
+    false
+  );
+  const [newVisitorName, setNewVisitorName] = useState<string>("");
+  const [newVisitorDiscription, setNewVisitorDiscription] = useState<string>(
+    ""
+  );
+  const [newVisitorSumbnail, setNewVisitorSumbnail] = useState<UploadFile>({
+    objectUrl: "",
+    fileType: ""
+  });
+
+  const onRequestAddVisitor = async () => {
+    const uploadImage = async (file: File) => {
+      const url = `${nanoid()}${file.type}`;
+
+      await s3
+        .putObject({
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          Bucket: process.env.REACT_APP_S3_BUCKET_NAME!,
+          Key: url,
+          Body: file,
+          ACL: "public-read"
+        })
+        .promise()
+        .catch(err => {
+          props.handleFailureUpdateUser(err);
+        });
+
+      return url;
+    };
+
+    const sumbnailFile = await fetch(newVisitorSumbnail.objectUrl)
+      .then(response => response.blob())
+      .then(
+        blob => new File([blob], `${nanoid()}${newVisitorSumbnail.fileType}`)
+      );
+    const sumbnailUrl = await uploadImage(sumbnailFile);
+
+    await updatePostMutation({
+      variables: {
+        id: props.id,
+        name: props.name,
+        start: props.start,
+        finish: props.finish,
+        discription: props.discription,
+        sicflerId: "hoge",
+        sumbnail: props.sumbnail,
+        images: props.images,
+        ornerId: props.orner.id,
+        address: props.address,
+        location: {
+          lat: props.location?.lat,
+          lng: props.location?.lng
+        },
+        target: {
+          ageGroup: props.target.ageGroup,
+          gender: props.target.gender
+        },
+        visitors: props.visitors.concat({
+          visitorName: newVisitorName,
+          discription: newVisitorDiscription,
+          sumbnail: sumbnailUrl
+        })
+      }
+    }).catch(error => {
+      props.handleFailureUpdateUser(error);
+    });
+
+    props.handleSuccessUpdateUser();
+    setIsOpenNewVisitorDialog(false);
+  };
+
+  return (
+    <Card className={classes.card}>
+      <CardContent>
+        <div className={classes.attributeWrap}>
+          <Typography className={classes.title} color="textSecondary">
+            Post ID
+          </Typography>
+          <Typography>{props.id}</Typography>
+        </div>
+        <div className={classes.attributeWrap}>
+          <Typography className={classes.title} color="textSecondary">
+            イベント名
+          </Typography>
+          {isEditting ? (
+            <TextField
+              value={newPostName}
+              onChange={e => setNewPostName(e.target.value)}
+            />
+          ) : (
+            <Typography>{props.name}</Typography>
+          )}
+        </div>
+        <div className={classes.attributeWrap}>
+          <Typography className={classes.title} color="textSecondary">
+            開始日時
+          </Typography>
+          {isEditting ? (
+            <TextField
+              value={new Date(newPostStart)}
+              onChange={e => setNewPostStart(e.target.value)}
+            />
+          ) : (
+            <Typography>{new Date(props.start).toUTCString()}</Typography>
+          )}
+        </div>
+        <div className={classes.attributeWrap}>
+          <Typography className={classes.title} color="textSecondary">
+            終了日時
+          </Typography>
+          {isEditting ? (
+            <TextField
+              value={props.finish}
+              onChange={e => setNewPostFinish(e.target.value)}
+            />
+          ) : (
+            <Typography>{new Date(props.finish).toUTCString()}</Typography>
+          )}
+        </div>
+        <div className={classes.attributeWrap}>
+          <Typography className={classes.title} color="textSecondary">
+            詳細説明
+          </Typography>
+          {isEditting ? (
+            <TextField
+              value={newPostDiscription}
+              onChange={e => setNewPostDiscription(e.target.value)}
+            />
+          ) : (
+            <Typography>{props.discription}</Typography>
+          )}
+        </div>
+        <div className={classes.attributeWrap}>
+          <Typography className={classes.title} color="textSecondary">
+            サムネイル画像
+          </Typography>
+          <img
+            src={`https://sicfler-bucket.s3-ap-northeast-1.amazonaws.com/${props.sumbnail!}`}
+            alt="サムネイル画像"
+            className={classes.ornerImage}
+          />
+        </div>
+        <div className={classes.attributeWrap}>
+          <Typography className={classes.title} color="textSecondary">
+            イメージ一覧
+          </Typography>
+          {props.images.map(image => (
+            <img
+              src={`https://sicfler-bucket.s3-ap-northeast-1.amazonaws.com/${image}`}
+              alt="イベントイメージ"
+              key={image!}
+              className={classes.ornerImage}
+            />
+          ))}
+        </div>
+        <div>
+          <Typography className={classes.title} color="textSecondary">
+            訪問者一覧
+          </Typography>
+          {!isEditting && (
+            <Button
+              variant="contained"
+              onClick={() => setIsOpenNewVisitorDialog(true)}
+            >
+              訪問者を追加する
+            </Button>
+          )}
+          <Dialog
+            open={isOpenNewVisitorDialog}
+            onClose={() => setIsOpenNewVisitorDialog(false)}
+          >
+            <DialogTitle>新しい訪問者</DialogTitle>
+            <DialogContent>
+              <div className={classes.textFieldWrapper}>
+                <InputLabel>
+                  訪問者名
+                  <TextField
+                    className={classes.textField}
+                    value={newVisitorName}
+                    onChange={e => setNewVisitorName(e.target.value)}
+                  />
+                </InputLabel>
+              </div>
+              <div className={classes.textFieldWrapper}>
+                <InputLabel>
+                  詳細説明
+                  <TextField
+                    className={classes.textField}
+                    value={newVisitorDiscription}
+                    onChange={e => setNewVisitorDiscription(e.target.value)}
+                  />
+                </InputLabel>
+              </div>
+              <div className={classes.textFieldWrapper}>
+                <InputLabel>
+                  サムネイル画像
+                  <div className={classes.textFieldWrapper}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      className={classes.textField}
+                    >
+                      画像を選択
+                      <input
+                        type="file"
+                        className={classes.fileInput}
+                        onChange={e =>
+                          e.target.files &&
+                          setNewVisitorSumbnail({
+                            objectUrl: URL.createObjectURL(e.target.files[0]),
+                            fileType: e.target.files[0].type
+                          })
+                        }
+                      />
+                    </Button>
+                  </div>
+                </InputLabel>
+              </div>
+              {newVisitorSumbnail.objectUrl && (
+                <div className={classes.textFieldWrapper}>
+                  <InputLabel>
+                    サムネイルプレビュー
+                    <div className={classes.textFieldWrapper}>
+                      <img
+                        src={newVisitorSumbnail.objectUrl}
+                        className={classes.ornerImage}
+                        alt="サムネイルプレビュー"
+                      />
+                    </div>
+                  </InputLabel>
+                  <Button
+                    onClick={() =>
+                      setNewVisitorSumbnail({
+                        objectUrl: "",
+                        fileType: ""
+                      })
+                    }
+                  >
+                    サムネイル削除
+                  </Button>
+                </div>
+              )}
+            </DialogContent>
+            <DialogActions>
+              <Button>キャンセル</Button>
+              <Button onClick={() => onRequestAddVisitor()}>追加</Button>
+            </DialogActions>
+          </Dialog>
+          {props.visitors.map(visitor => (
+            <div key={visitor?.visitorName}>
+              <Typography>
+                訪問者名：
+                {visitor?.visitorName}
+              </Typography>
+              <Typography>
+                詳細説明：
+                {visitor?.discription}
+              </Typography>
+              <Typography>サムネイル画像</Typography>
+              <img
+                src={`https://sicfler-bucket.s3-ap-northeast-1.amazonaws.com/${visitor?.sumbnail}`}
+                alt="訪問者サムネイル"
+                className={classes.ornerImage}
+              />
+            </div>
+          ))}
+        </div>
+        <div className={classes.attributeWrap}>
+          <Typography className={classes.title} color="textSecondary">
+            イベント開催地住所
+          </Typography>
+          {isEditting ? (
+            <TextField />
+          ) : (
+            <Typography>{props.address}</Typography>
+          )}
+        </div>
+        <div className={classes.attributeWrap}>
+          <Typography className={classes.title} color="textSecondary">
+            イベント開催地座標
+          </Typography>
+          {isEditting ? (
+            <TextField
+              value={newPostLocation.lat}
+              onChange={e =>
+                setNewPostLocation({
+                  ...newPostLocation,
+                  lat: Number(e.target.value)
+                })
+              }
+            />
+          ) : (
+            <Typography>
+              緯度：
+              {props.location?.lat}
+            </Typography>
+          )}
+          {isEditting ? (
+            <TextField
+              value={newPostLocation.lng}
+              onChange={e =>
+                setNewPostLocation({
+                  ...newPostLocation,
+                  lng: Number(e.target.value)
+                })
+              }
+            />
+          ) : (
+            <Typography>
+              経度：
+              {props.location?.lng}
+            </Typography>
+          )}
+        </div>
+        <div className={classes.attributeWrap}>
+          <Typography className={classes.title} color="textSecondary">
+            イベントターゲット
+          </Typography>
+          {isEditting ? (
+            <TextField
+              value={newPostTargetAgeGroup}
+              onChange={e => setNewPostTargetAgeGroup(Number(e.target.value))}
+            />
+          ) : (
+            <Typography>
+              年代：
+              {props.target.ageGroup}
+            </Typography>
+          )}
+          {isEditting ? (
+            <TextField
+              value={newPostTargetGender}
+              onChange={e => setNewPostTargetGender(Number(e.target.value))}
+            />
+          ) : (
+            <Typography>
+              性別：
+              {props.target.gender}
+            </Typography>
+          )}
+        </div>
+      </CardContent>
+      <CardActions>
+        {isEditting ? (
+          <>
+            <Button onClick={() => setIsEditting(false)}>キャンセル</Button>
+            <Button color="primary">送信</Button>
+            <Button color="secondary">投稿を削除</Button>
+          </>
+        ) : (
+          <Button onClick={() => setIsEditting(true)}>編集</Button>
+        )}
+      </CardActions>
+    </Card>
+  );
+};
 
 const Posts: React.FC = () => {
   const classes = useStyle();
@@ -193,7 +590,7 @@ const Posts: React.FC = () => {
         start: newPostStart,
         finish: newPostFinish,
         discription: newPostDiscription,
-        sicflerId: "0",
+        sicflerId: "hoge",
         sumbnail: sumbnailUrl,
         images: postImages,
         ornerId: loginState.data.loggedInId,
@@ -270,154 +667,53 @@ const Posts: React.FC = () => {
                 の投稿一覧
               </Title>
               {postsQuery.data?.posts.map(post => (
-                <Card key={post?.id} className={classes.card}>
-                  <CardContent>
-                    <div className={classes.attributeWrap}>
-                      <Typography
-                        className={classes.title}
-                        color="textSecondary"
-                      >
-                        Post ID
-                      </Typography>
-                      <Typography>{post?.id}</Typography>
-                    </div>
-                    <div className={classes.attributeWrap}>
-                      <Typography
-                        className={classes.title}
-                        color="textSecondary"
-                      >
-                        イベント名
-                      </Typography>
-                      <Typography>{post?.name}</Typography>
-                    </div>
-                    <div className={classes.attributeWrap}>
-                      <Typography
-                        className={classes.title}
-                        color="textSecondary"
-                      >
-                        開始日時
-                      </Typography>
-                      <Typography>
-                        {new Date(post?.start).toUTCString()}
-                      </Typography>
-                    </div>
-                    <div className={classes.attributeWrap}>
-                      <Typography
-                        className={classes.title}
-                        color="textSecondary"
-                      >
-                        終了日時
-                      </Typography>
-                      <Typography>
-                        {new Date(post?.finish).toUTCString()}
-                      </Typography>
-                    </div>
-                    <div className={classes.attributeWrap}>
-                      <Typography
-                        className={classes.title}
-                        color="textSecondary"
-                      >
-                        詳細説明
-                      </Typography>
-                      <Typography>{post?.discription}</Typography>
-                    </div>
-                    <div className={classes.attributeWrap}>
-                      <Typography
-                        className={classes.title}
-                        color="textSecondary"
-                      >
-                        サムネイル画像
-                      </Typography>
-                      <img
-                        src={`https://sicfler-bucket.s3-ap-northeast-1.amazonaws.com/${post?.sumbnail!}`}
-                        alt="サムネイル画像"
-                        className={classes.ornerImage}
-                      />
-                    </div>
-                    <div className={classes.attributeWrap}>
-                      <Typography
-                        className={classes.title}
-                        color="textSecondary"
-                      >
-                        イメージ一覧
-                      </Typography>
-                      {post?.images.map(image => (
-                        <img
-                          src={`https://sicfler-bucket.s3-ap-northeast-1.amazonaws.com/${image}`}
-                          alt="イベントイメージ"
-                          key={image!}
-                          className={classes.ornerImage}
-                        />
-                      ))}
-                    </div>
-                    <div>
-                      <Typography
-                        className={classes.title}
-                        color="textSecondary"
-                      >
-                        訪問者一覧
-                      </Typography>
-                      {post?.visitors.map(visitor => (
-                        <div key={visitor?.visitorName}>
-                          <Typography>
-                            訪問者名：
-                            {visitor?.visitorName}
-                          </Typography>
-                          <Typography>
-                            詳細説明：
-                            {visitor?.discription}
-                          </Typography>
-                          <Typography>サムネイル画像</Typography>
-                          <img
-                            src={`https://sicfler-bucket.s3-ap-northeast-1.amazonaws.com/${visitor?.sumbnail}`}
-                            alt="訪問者サムネイル"
-                          />
-                        </div>
-                      ))}
-                    </div>
-                    <div className={classes.attributeWrap}>
-                      <Typography
-                        className={classes.title}
-                        color="textSecondary"
-                      >
-                        イベント開催地住所
-                      </Typography>
-                      <Typography>{post?.address}</Typography>
-                    </div>
-                    <div className={classes.attributeWrap}>
-                      <Typography
-                        className={classes.title}
-                        color="textSecondary"
-                      >
-                        イベント開催地座標
-                      </Typography>
-                      <Typography>
-                        緯度：
-                        {post?.location?.lat}
-                      </Typography>
-                      <Typography>
-                        経度：
-                        {post?.location?.lng}
-                      </Typography>
-                    </div>
-                    <div className={classes.attributeWrap}>
-                      <Typography
-                        className={classes.title}
-                        color="textSecondary"
-                      >
-                        イベントターゲット
-                      </Typography>
-                      <Typography>
-                        年代：
-                        {post?.target.ageGroup}
-                      </Typography>
-                      <Typography>
-                        性別：
-                        {post?.target.gender}
-                      </Typography>
-                    </div>
-                  </CardContent>
-                </Card>
+                <PostInfo
+                  id={post?.id!}
+                  sicflerId={post?.sicflerId!}
+                  orner={post?.orner!}
+                  name={post?.name!}
+                  start={post?.start}
+                  finish={post?.finish}
+                  discription={post?.discription}
+                  sumbnail={post?.sumbnail}
+                  images={post?.images!}
+                  visitors={post?.visitors!}
+                  address={post?.address}
+                  location={post?.location}
+                  target={post?.target!}
+                  handleSuccessUpdateUser={() => {
+                    enqueueSnackbar("投稿情報を更新しました。", {
+                      variant: "success"
+                    });
+                    postsQuery.refetch({
+                      ornerId: loginState.data.loggedInId
+                    });
+                  }}
+                  handleFailureUpdateUser={error => {
+                    enqueueSnackbar(JSON.stringify(error), {
+                      variant: "error"
+                    });
+                    postsQuery.refetch({
+                      ornerId: loginState.data.loggedInId
+                    });
+                  }}
+                  handleSuccessDeleteUser={() => {
+                    enqueueSnackbar("投稿を削除しました。", {
+                      variant: "default"
+                    });
+                    postsQuery.refetch({
+                      ornerId: loginState.data.loggedInId
+                    });
+                  }}
+                  handleFailureDeleteUser={error => {
+                    enqueueSnackbar(JSON.stringify(error), {
+                      variant: "error"
+                    });
+                    postsQuery.refetch({
+                      ornerId: loginState.data.loggedInId
+                    });
+                  }}
+                />
               ))}
             </>
           )}
