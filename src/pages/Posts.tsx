@@ -189,7 +189,8 @@ const PostInfo: React.FC<PostInfoProps> = props => {
         visitors: props.visitors.concat({
           visitorName: newVisitorName,
           discription: newVisitorDiscription,
-          sumbnail: sumbnailUrl
+          sumbnail: sumbnailUrl,
+          __typename: "Visitor"
         })
       }
     }).catch(error => {
