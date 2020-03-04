@@ -166,6 +166,12 @@ const PostInfo: React.FC<PostInfoProps> = props => {
       );
     const sumbnailUrl = await uploadImage(sumbnailFile);
 
+    const images = props.visitors.map(visitor => ({
+      visitorName: newVisitorName,
+      discription: newVisitorDiscription,
+      sumbnail: sumbnailUrl
+    }));
+
     await updatePostMutation({
       variables: {
         id: props.id,
@@ -186,11 +192,10 @@ const PostInfo: React.FC<PostInfoProps> = props => {
           ageGroup: props.target.ageGroup,
           gender: props.target.gender
         },
-        visitors: props.visitors.concat({
+        visitors: images.concat({
           visitorName: newVisitorName,
           discription: newVisitorDiscription,
-          sumbnail: sumbnailUrl,
-          __typename: "Visitor"
+          sumbnail: sumbnailUrl
         })
       }
     }).catch(error => {
