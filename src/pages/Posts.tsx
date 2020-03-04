@@ -167,9 +167,9 @@ const PostInfo: React.FC<PostInfoProps> = props => {
     const sumbnailUrl = await uploadImage(sumbnailFile);
 
     const images = props.visitors.map(visitor => ({
-      visitorName: newVisitorName,
-      discription: newVisitorDiscription,
-      sumbnail: sumbnailUrl
+      visitorName: visitor?.visitorName!,
+      discription: visitor?.discription!,
+      sumbnail: visitor?.sumbnail!
     }));
 
     await updatePostMutation({
