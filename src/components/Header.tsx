@@ -41,7 +41,7 @@ const useStyle = makeStyles((theme: Theme) => ({
   },
   drawerPaper: {
     position: "relative",
-    height: "100vh",
+    height: "100%",
     color: "white",
     whiteSpace: "nowrap",
     width: DRAWER_WIDTH,

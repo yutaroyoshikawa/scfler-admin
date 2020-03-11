@@ -9,13 +9,11 @@ const Template: React.FC = props => {
 
   return (
     <Wrapper>
-      <HeaderWrapper>
-        <Header
-          title={
-            pages[pages.findIndex(page => page.url === location.pathname)].name
-          }
-        />
-      </HeaderWrapper>
+      <Header
+        title={
+          pages[pages.findIndex(page => page.url === location.pathname)].name
+        }
+      />
       <MainContent>{props.children}</MainContent>
     </Wrapper>
   );
@@ -25,15 +23,6 @@ export default Template;
 
 const Wrapper = styled.div`
   display: flex;
-`;
-
-const HeaderWrapper = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 999;
 `;
 
 const MainContent = styled.main`
