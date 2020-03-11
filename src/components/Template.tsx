@@ -9,11 +9,13 @@ const Template: React.FC = props => {
 
   return (
     <Wrapper>
-      <Header
-        title={
-          pages[pages.findIndex(page => page.url === location.pathname)].name
-        }
-      />
+      <HeaderWrapper>
+        <Header
+          title={
+            pages[pages.findIndex(page => page.url === location.pathname)].name
+          }
+        />
+      </HeaderWrapper>
       <MainContent>{props.children}</MainContent>
     </Wrapper>
   );
@@ -25,7 +27,16 @@ const Wrapper = styled.div`
   display: flex;
 `;
 
+const HeaderWrapper = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999;
+`;
+
 const MainContent = styled.main`
-  padding-top: 64px;
+  padding: 64px 0 0 240px;
   width: 100%;
 `;
