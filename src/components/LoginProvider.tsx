@@ -49,17 +49,6 @@ const LoginProvider: React.FC = props => {
   const classes = useStyle();
 
   useMemo(() => {
-    if (myInfoQuery.error) {
-      client.writeData({
-        data: {
-          ...data,
-          isLoggedIn: false,
-          loggedInId: "",
-          loggedInRole: Roles.User
-        }
-      });
-    }
-
     if (data.isLoggedIn && myInfoQuery.data) {
       client.writeData({
         data: {
@@ -70,32 +59,47 @@ const LoginProvider: React.FC = props => {
       });
     }
     // eslint-disable-next-line
-  }, [myInfoQuery.error, data.isLoggedIn, myInfoQuery.data]);
+  }, [data.isLoggedIn, myInfoQuery.data]);
 
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const newPasswordRequired = await signIn(userName, password).catch(err => {
-      enqueueSnackbar(JSON.stringify(err), {
-        variant: "error"
-      });
-    });
-    if (newPasswordRequired) {
-      await newPasswordChallenge(password).catch(err => {
-        enqueueSnackbar(JSON.stringify(err), {
-          variant: "error"
-        });
-      });
+  useMemo(() => {
+    if (myInfoQuery.error) {
       client.writeData({
         data: {
-          isLoggedIn: true
+          ...data,
+          isLoggedIn: false,
+          loggedInId: "",
+          loggedInRole: Roles.User
         }
       });
     }
-    if (!newPasswordRequired) {
-      client.writeData({
-        data: {
-          isLoggedIn: false
-        }
+  }, [myInfoQuery.error]);
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const result = await signIn(userName, password);
+      if (result.newPasswordRequired) {
+        await newPasswordChallenge(password).catch(err => {
+          enqueueSnackbar(JSON.stringify(err), {
+            variant: "error"
+          });
+        });
+        client.writeData({
+          data: {
+            isLoggedIn: true
+          }
+        });
+      }
+      if (!result.newPasswordRequired) {
+        client.writeData({
+          data: {
+            isLoggedIn: true
+          }
+        });
+      }
+    } catch (err) {
+      enqueueSnackbar(JSON.stringify(err), {
+        variant: "error"
       });
     }
   };

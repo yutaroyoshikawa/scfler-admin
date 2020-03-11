@@ -22,7 +22,12 @@ let cognitoUser: CognitoUser | null = lastLogin
     })
   : null;
 
-export const signIn = (userName: string, password: string) => {
+export const signIn = (
+  userName: string,
+  password: string
+): Promise<{
+  newPasswordRequired: boolean;
+}> => {
   return new Promise<{
     newPasswordRequired: boolean;
   }>((resolve, reject) => {
