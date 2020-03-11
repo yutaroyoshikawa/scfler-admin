@@ -3,6 +3,7 @@ import gql from "graphql-tag";
 import { useQuery } from "@apollo/react-hooks";
 import { makeStyles } from "@material-ui/styles";
 import { Theme } from "@material-ui/core";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import CardActions from "@material-ui/core/CardActions";
@@ -80,6 +81,18 @@ const useStyle = makeStyles((theme: Theme) => ({
     width: "200px",
     height: "160px",
     objectFit: "cover"
+  },
+  loaderWrap: {
+    width: "100vw",
+    height: "100vh",
+    background: "rgba(0, 0, 0, 0.5)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    position: "fixed",
+    top: 0,
+    left: 0,
+    zIndex: 9999999999
   }
 }));
 
@@ -100,6 +113,7 @@ interface PostInfoProps extends Post {
 
 const PostInfo: React.FC<PostInfoProps> = props => {
   const classes = useStyle();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [updatePostMutation] = useUpdatePostMutation();
   const [isEditting, setIsEditting] = useState<boolean>(false);
   const [newPostName, setNewPostName] = useState<string>(props.name);
@@ -140,6 +154,8 @@ const PostInfo: React.FC<PostInfoProps> = props => {
   });
 
   const onRequestAddVisitor = async () => {
+    setIsLoading(true);
+
     const uploadImage = async (file: File) => {
       const url = `${nanoid()}${file.type}`;
 
@@ -204,291 +220,299 @@ const PostInfo: React.FC<PostInfoProps> = props => {
 
     props.handleSuccessUpdateUser();
     setIsOpenNewVisitorDialog(false);
+    setIsLoading(false);
   };
 
   return (
-    <Card className={classes.card}>
-      <CardContent>
-        <div className={classes.attributeWrap}>
-          <Typography className={classes.title} color="textSecondary">
-            Post ID
-          </Typography>
-          <Typography>{props.id}</Typography>
+    <>
+      {isLoading && (
+        <div className={classes.loaderWrap}>
+          <CircularProgress />
         </div>
-        <div className={classes.attributeWrap}>
-          <Typography className={classes.title} color="textSecondary">
-            イベント名
-          </Typography>
-          {isEditting ? (
-            <TextField
-              value={newPostName}
-              onChange={e => setNewPostName(e.target.value)}
-            />
-          ) : (
-            <Typography>{props.name}</Typography>
-          )}
-        </div>
-        <div className={classes.attributeWrap}>
-          <Typography className={classes.title} color="textSecondary">
-            開始日時
-          </Typography>
-          {isEditting ? (
-            <TextField
-              value={new Date(newPostStart)}
-              onChange={e => setNewPostStart(e.target.value)}
-            />
-          ) : (
-            <Typography>{new Date(props.start).toUTCString()}</Typography>
-          )}
-        </div>
-        <div className={classes.attributeWrap}>
-          <Typography className={classes.title} color="textSecondary">
-            終了日時
-          </Typography>
-          {isEditting ? (
-            <TextField
-              value={props.finish}
-              onChange={e => setNewPostFinish(e.target.value)}
-            />
-          ) : (
-            <Typography>{new Date(props.finish).toUTCString()}</Typography>
-          )}
-        </div>
-        <div className={classes.attributeWrap}>
-          <Typography className={classes.title} color="textSecondary">
-            詳細説明
-          </Typography>
-          {isEditting ? (
-            <TextField
-              value={newPostDiscription}
-              onChange={e => setNewPostDiscription(e.target.value)}
-            />
-          ) : (
-            <Typography>{props.discription}</Typography>
-          )}
-        </div>
-        <div className={classes.attributeWrap}>
-          <Typography className={classes.title} color="textSecondary">
-            サムネイル画像
-          </Typography>
-          <img
-            src={`https://sicfler-bucket.s3-ap-northeast-1.amazonaws.com/${props.sumbnail!}`}
-            alt="サムネイル画像"
-            className={classes.ornerImage}
-          />
-        </div>
-        <div className={classes.attributeWrap}>
-          <Typography className={classes.title} color="textSecondary">
-            イメージ一覧
-          </Typography>
-          {props.images.map(image => (
+      )}
+      <Card className={classes.card}>
+        <CardContent>
+          <div className={classes.attributeWrap}>
+            <Typography className={classes.title} color="textSecondary">
+              Post ID
+            </Typography>
+            <Typography>{props.id}</Typography>
+          </div>
+          <div className={classes.attributeWrap}>
+            <Typography className={classes.title} color="textSecondary">
+              イベント名
+            </Typography>
+            {isEditting ? (
+              <TextField
+                value={newPostName}
+                onChange={e => setNewPostName(e.target.value)}
+              />
+            ) : (
+              <Typography>{props.name}</Typography>
+            )}
+          </div>
+          <div className={classes.attributeWrap}>
+            <Typography className={classes.title} color="textSecondary">
+              開始日時
+            </Typography>
+            {isEditting ? (
+              <TextField
+                value={new Date(newPostStart)}
+                onChange={e => setNewPostStart(e.target.value)}
+              />
+            ) : (
+              <Typography>{new Date(props.start).toUTCString()}</Typography>
+            )}
+          </div>
+          <div className={classes.attributeWrap}>
+            <Typography className={classes.title} color="textSecondary">
+              終了日時
+            </Typography>
+            {isEditting ? (
+              <TextField
+                value={props.finish}
+                onChange={e => setNewPostFinish(e.target.value)}
+              />
+            ) : (
+              <Typography>{new Date(props.finish).toUTCString()}</Typography>
+            )}
+          </div>
+          <div className={classes.attributeWrap}>
+            <Typography className={classes.title} color="textSecondary">
+              詳細説明
+            </Typography>
+            {isEditting ? (
+              <TextField
+                value={newPostDiscription}
+                onChange={e => setNewPostDiscription(e.target.value)}
+              />
+            ) : (
+              <Typography>{props.discription}</Typography>
+            )}
+          </div>
+          <div className={classes.attributeWrap}>
+            <Typography className={classes.title} color="textSecondary">
+              サムネイル画像
+            </Typography>
             <img
-              src={`https://sicfler-bucket.s3-ap-northeast-1.amazonaws.com/${image}`}
-              alt="イベントイメージ"
-              key={image!}
+              src={`https://sicfler-bucket.s3-ap-northeast-1.amazonaws.com/${props.sumbnail!}`}
+              alt="サムネイル画像"
               className={classes.ornerImage}
             />
-          ))}
-        </div>
-        <div>
-          <Typography className={classes.title} color="textSecondary">
-            訪問者一覧
-          </Typography>
-          {!isEditting && (
-            <Button
-              variant="contained"
-              onClick={() => setIsOpenNewVisitorDialog(true)}
-            >
-              訪問者を追加する
-            </Button>
-          )}
-          <Dialog
-            open={isOpenNewVisitorDialog}
-            onClose={() => setIsOpenNewVisitorDialog(false)}
-          >
-            <DialogTitle>新しい訪問者</DialogTitle>
-            <DialogContent>
-              <div className={classes.textFieldWrapper}>
-                <InputLabel>
-                  訪問者名
-                  <TextField
-                    className={classes.textField}
-                    value={newVisitorName}
-                    onChange={e => setNewVisitorName(e.target.value)}
-                  />
-                </InputLabel>
-              </div>
-              <div className={classes.textFieldWrapper}>
-                <InputLabel>
-                  詳細説明
-                  <TextField
-                    className={classes.textField}
-                    value={newVisitorDiscription}
-                    onChange={e => setNewVisitorDiscription(e.target.value)}
-                  />
-                </InputLabel>
-              </div>
-              <div className={classes.textFieldWrapper}>
-                <InputLabel>
-                  サムネイル画像
-                  <div className={classes.textFieldWrapper}>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      className={classes.textField}
-                    >
-                      画像を選択
-                      <input
-                        type="file"
-                        className={classes.fileInput}
-                        onChange={e =>
-                          e.target.files &&
-                          setNewVisitorSumbnail({
-                            objectUrl: URL.createObjectURL(e.target.files[0]),
-                            fileType: e.target.files[0].type
-                          })
-                        }
-                      />
-                    </Button>
-                  </div>
-                </InputLabel>
-              </div>
-              {newVisitorSumbnail.objectUrl && (
-                <div className={classes.textFieldWrapper}>
-                  <InputLabel>
-                    サムネイルプレビュー
-                    <div className={classes.textFieldWrapper}>
-                      <img
-                        src={newVisitorSumbnail.objectUrl}
-                        className={classes.ornerImage}
-                        alt="サムネイルプレビュー"
-                      />
-                    </div>
-                  </InputLabel>
-                  <Button
-                    onClick={() =>
-                      setNewVisitorSumbnail({
-                        objectUrl: "",
-                        fileType: ""
-                      })
-                    }
-                  >
-                    サムネイル削除
-                  </Button>
-                </div>
-              )}
-            </DialogContent>
-            <DialogActions>
-              <Button>キャンセル</Button>
-              <Button onClick={() => onRequestAddVisitor()}>追加</Button>
-            </DialogActions>
-          </Dialog>
-          {props.visitors.map(visitor => (
-            <div key={visitor?.visitorName}>
-              <Typography>
-                訪問者名：
-                {visitor?.visitorName}
-              </Typography>
-              <Typography>
-                詳細説明：
-                {visitor?.discription}
-              </Typography>
-              <Typography>サムネイル画像</Typography>
+          </div>
+          <div className={classes.attributeWrap}>
+            <Typography className={classes.title} color="textSecondary">
+              イメージ一覧
+            </Typography>
+            {props.images.map(image => (
               <img
-                src={`https://sicfler-bucket.s3-ap-northeast-1.amazonaws.com/${visitor?.sumbnail}`}
-                alt="訪問者サムネイル"
+                src={`https://sicfler-bucket.s3-ap-northeast-1.amazonaws.com/${image}`}
+                alt="イベントイメージ"
+                key={image!}
                 className={classes.ornerImage}
               />
-            </div>
-          ))}
-        </div>
-        <div className={classes.attributeWrap}>
-          <Typography className={classes.title} color="textSecondary">
-            イベント開催地住所
-          </Typography>
-          {isEditting ? (
-            <TextField />
-          ) : (
-            <Typography>{props.address}</Typography>
-          )}
-        </div>
-        <div className={classes.attributeWrap}>
-          <Typography className={classes.title} color="textSecondary">
-            イベント開催地座標
-          </Typography>
-          {isEditting ? (
-            <TextField
-              value={newPostLocation.lat}
-              onChange={e =>
-                setNewPostLocation({
-                  ...newPostLocation,
-                  lat: Number(e.target.value)
-                })
-              }
-            />
-          ) : (
-            <Typography>
-              緯度：
-              {props.location?.lat}
+            ))}
+          </div>
+          <div>
+            <Typography className={classes.title} color="textSecondary">
+              訪問者一覧
             </Typography>
-          )}
-          {isEditting ? (
-            <TextField
-              value={newPostLocation.lng}
-              onChange={e =>
-                setNewPostLocation({
-                  ...newPostLocation,
-                  lng: Number(e.target.value)
-                })
-              }
-            />
-          ) : (
-            <Typography>
-              経度：
-              {props.location?.lng}
+            {!isEditting && (
+              <Button
+                variant="contained"
+                onClick={() => setIsOpenNewVisitorDialog(true)}
+              >
+                訪問者を追加する
+              </Button>
+            )}
+            <Dialog
+              open={isOpenNewVisitorDialog}
+              onClose={() => setIsOpenNewVisitorDialog(false)}
+            >
+              <DialogTitle>新しい訪問者</DialogTitle>
+              <DialogContent>
+                <div className={classes.textFieldWrapper}>
+                  <InputLabel>
+                    訪問者名
+                    <TextField
+                      className={classes.textField}
+                      value={newVisitorName}
+                      onChange={e => setNewVisitorName(e.target.value)}
+                    />
+                  </InputLabel>
+                </div>
+                <div className={classes.textFieldWrapper}>
+                  <InputLabel>
+                    詳細説明
+                    <TextField
+                      className={classes.textField}
+                      value={newVisitorDiscription}
+                      onChange={e => setNewVisitorDiscription(e.target.value)}
+                    />
+                  </InputLabel>
+                </div>
+                <div className={classes.textFieldWrapper}>
+                  <InputLabel>
+                    サムネイル画像
+                    <div className={classes.textFieldWrapper}>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        className={classes.textField}
+                      >
+                        画像を選択
+                        <input
+                          type="file"
+                          className={classes.fileInput}
+                          onChange={e =>
+                            e.target.files &&
+                            setNewVisitorSumbnail({
+                              objectUrl: URL.createObjectURL(e.target.files[0]),
+                              fileType: e.target.files[0].type
+                            })
+                          }
+                        />
+                      </Button>
+                    </div>
+                  </InputLabel>
+                </div>
+                {newVisitorSumbnail.objectUrl && (
+                  <div className={classes.textFieldWrapper}>
+                    <InputLabel>
+                      サムネイルプレビュー
+                      <div className={classes.textFieldWrapper}>
+                        <img
+                          src={newVisitorSumbnail.objectUrl}
+                          className={classes.ornerImage}
+                          alt="サムネイルプレビュー"
+                        />
+                      </div>
+                    </InputLabel>
+                    <Button
+                      onClick={() =>
+                        setNewVisitorSumbnail({
+                          objectUrl: "",
+                          fileType: ""
+                        })
+                      }
+                    >
+                      サムネイル削除
+                    </Button>
+                  </div>
+                )}
+              </DialogContent>
+              <DialogActions>
+                <Button>キャンセル</Button>
+                <Button onClick={() => onRequestAddVisitor()}>追加</Button>
+              </DialogActions>
+            </Dialog>
+            {props.visitors.map(visitor => (
+              <div key={visitor?.visitorName}>
+                <Typography>
+                  訪問者名：
+                  {visitor?.visitorName}
+                </Typography>
+                <Typography>
+                  詳細説明：
+                  {visitor?.discription}
+                </Typography>
+                <Typography>サムネイル画像</Typography>
+                <img
+                  src={`https://sicfler-bucket.s3-ap-northeast-1.amazonaws.com/${visitor?.sumbnail}`}
+                  alt="訪問者サムネイル"
+                  className={classes.ornerImage}
+                />
+              </div>
+            ))}
+          </div>
+          <div className={classes.attributeWrap}>
+            <Typography className={classes.title} color="textSecondary">
+              イベント開催地住所
             </Typography>
-          )}
-        </div>
-        <div className={classes.attributeWrap}>
-          <Typography className={classes.title} color="textSecondary">
-            イベントターゲット
-          </Typography>
-          {isEditting ? (
-            <TextField
-              value={newPostTargetAgeGroup}
-              onChange={e => setNewPostTargetAgeGroup(Number(e.target.value))}
-            />
-          ) : (
-            <Typography>
-              年代：
-              {props.target.ageGroup}
+            {isEditting ? (
+              <TextField />
+            ) : (
+              <Typography>{props.address}</Typography>
+            )}
+          </div>
+          <div className={classes.attributeWrap}>
+            <Typography className={classes.title} color="textSecondary">
+              イベント開催地座標
             </Typography>
-          )}
-          {isEditting ? (
-            <TextField
-              value={newPostTargetGender}
-              onChange={e => setNewPostTargetGender(Number(e.target.value))}
-            />
-          ) : (
-            <Typography>
-              性別：
-              {props.target.gender}
+            {isEditting ? (
+              <TextField
+                value={newPostLocation.lat}
+                onChange={e =>
+                  setNewPostLocation({
+                    ...newPostLocation,
+                    lat: Number(e.target.value)
+                  })
+                }
+              />
+            ) : (
+              <Typography>
+                緯度：
+                {props.location?.lat}
+              </Typography>
+            )}
+            {isEditting ? (
+              <TextField
+                value={newPostLocation.lng}
+                onChange={e =>
+                  setNewPostLocation({
+                    ...newPostLocation,
+                    lng: Number(e.target.value)
+                  })
+                }
+              />
+            ) : (
+              <Typography>
+                経度：
+                {props.location?.lng}
+              </Typography>
+            )}
+          </div>
+          <div className={classes.attributeWrap}>
+            <Typography className={classes.title} color="textSecondary">
+              イベントターゲット
             </Typography>
+            {isEditting ? (
+              <TextField
+                value={newPostTargetAgeGroup}
+                onChange={e => setNewPostTargetAgeGroup(Number(e.target.value))}
+              />
+            ) : (
+              <Typography>
+                年代：
+                {props.target.ageGroup}
+              </Typography>
+            )}
+            {isEditting ? (
+              <TextField
+                value={newPostTargetGender}
+                onChange={e => setNewPostTargetGender(Number(e.target.value))}
+              />
+            ) : (
+              <Typography>
+                性別：
+                {props.target.gender}
+              </Typography>
+            )}
+          </div>
+        </CardContent>
+        <CardActions>
+          {isEditting ? (
+            <>
+              <Button onClick={() => setIsEditting(false)}>キャンセル</Button>
+              <Button color="primary">送信</Button>
+              <Button color="secondary">投稿を削除</Button>
+            </>
+          ) : (
+            <Button onClick={() => setIsEditting(true)}>編集</Button>
           )}
-        </div>
-      </CardContent>
-      <CardActions>
-        {isEditting ? (
-          <>
-            <Button onClick={() => setIsEditting(false)}>キャンセル</Button>
-            <Button color="primary">送信</Button>
-            <Button color="secondary">投稿を削除</Button>
-          </>
-        ) : (
-          <Button onClick={() => setIsEditting(true)}>編集</Button>
-        )}
-      </CardActions>
-    </Card>
+        </CardActions>
+      </Card>
+    </>
   );
 };
 
